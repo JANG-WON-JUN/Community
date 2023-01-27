@@ -19,7 +19,7 @@ public class Comment extends BaseEntity {
 
     private String comment;
 
-    private int commentOrder;
+    private Integer commentOrder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")

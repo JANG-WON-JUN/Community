@@ -23,7 +23,7 @@ public class Board extends BaseEntity {
     @Lob
     private String content;
 
-    private int views;
+    private Integer views;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(7)")

@@ -17,10 +17,10 @@ public enum Level {
     LEVEL9(801, 900),
     LEVEL_MAX(901, Integer.MAX_VALUE);
 
-    private int minPoint;
-    private int maxPoint;
+    private Integer minPoint;
+    private Integer maxPoint;
 
-    public static Level findLevel(int levelPoint){
+    public static Level findLevel(Integer levelPoint){
         return Arrays.stream(Level.values())
                 .filter(level -> (level.minPoint <= levelPoint && level.maxPoint >= levelPoint))
                 .findFirst()

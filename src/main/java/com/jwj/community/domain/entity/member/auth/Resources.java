@@ -24,7 +24,7 @@ public class Resources extends BaseEntity {
     @Column(columnDefinition = "varchar(10)")
     private HttpMethod httpMethod;
 
-    private int orderNum; // 자원의 우선순위
+    private Integer orderNum; // 자원의 우선순위
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(10)")
