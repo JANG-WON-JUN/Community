@@ -47,9 +47,9 @@ dependencies {
 
 	// querydsl (이후에 gradle > classes 실행)
 	implementation 'com.querydsl:querydsl-core'
-	implementation 'com.querydsl:querydsl-jpa'
 	// springBoot 3.0 이전 -> 끝에 :jpa 붙이기
 	// springBoot 3.0 이후 -> 끝에 :jakarta 로 변경
+	implementation "com.querydsl:querydsl-jpa:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
 	annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
 	annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 	annotationProcessor "jakarta.annotation:jakarta.annotation-api"
