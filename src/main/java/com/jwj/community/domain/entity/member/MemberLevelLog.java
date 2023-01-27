@@ -23,7 +23,7 @@ public class MemberLevelLog {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int levelPoint;
+    private Integer levelPoint;
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(10)")
