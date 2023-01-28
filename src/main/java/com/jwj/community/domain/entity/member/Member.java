@@ -7,9 +7,7 @@ import com.jwj.community.domain.entity.member.embedded.BirthDay;
 import com.jwj.community.domain.enums.Sex;
 import com.jwj.community.domain.enums.State;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -26,6 +24,9 @@ public class Member extends BaseEntity {
     @Column(unique = true, columnDefinition = "varchar(100)", nullable = false)
     private String email;
 
+    @Column(columnDefinition = "varchar(100)")
+    private String name;
+
     @Embedded
     private BirthDay birthDay;
 
@@ -37,6 +38,7 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "varchar(7)")
     private State state;
 
+    @Setter
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     private Password password;
 
@@ -56,4 +58,16 @@ public class Member extends BaseEntity {
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Board> boards;
 
+    @Builder
+    public Member(String email, String name, BirthDay birthDay, Sex sex, State state) {
+        this.email = email;
+        this.name = name;
+        this.birthDay = birthDay;
+        this.sex = sex;
+        this.state = state;
+    }
+
+    public void changeState(State state) {
+        this.state = state;
+    }
 }
