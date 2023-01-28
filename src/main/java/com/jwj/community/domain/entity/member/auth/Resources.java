@@ -1,7 +1,7 @@
 package com.jwj.community.domain.entity.member.auth;
 
 import com.jwj.community.domain.entity.BaseEntity;
-import com.jwj.community.domain.entity.member.embedded.HttpMethod;
+import com.jwj.community.domain.enums.HttpMethod;
 import com.jwj.community.domain.enums.ResourceType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
