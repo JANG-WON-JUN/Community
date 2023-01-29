@@ -9,13 +9,9 @@ import lombok.Data;
 public class MemberCreate {
 
     private String email;
-
     private String name;
-
     private PasswordCreate password;
-
     private BirthDayCreate birthDay;
-
     private Sex sex;
 
     @Builder

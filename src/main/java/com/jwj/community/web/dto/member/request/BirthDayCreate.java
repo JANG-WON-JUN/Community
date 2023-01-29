@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 public class BirthDayCreate {
 
     private Integer year;
-
     private Integer month;
-
     private Integer day;
 
     @Builder
