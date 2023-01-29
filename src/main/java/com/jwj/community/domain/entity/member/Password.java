@@ -3,6 +3,7 @@ package com.jwj.community.domain.entity.member;
 import com.jwj.community.domain.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 
@@ -35,5 +36,9 @@ public class Password extends BaseEntity {
 
     public void extendBeChangedDate() {
         this.beChangedDate = relativeMonthFromNow(3);
+    }
+
+    public void encodePassword(PasswordEncoder passwordEncoder){
+        password = passwordEncoder.encode(password);
     }
 }
