@@ -1,9 +1,11 @@
 package com.jwj.community.domain.enums;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 import java.util.Arrays;
 
+@Getter
 @AllArgsConstructor
 public enum Roles {
     // Spring Security에서는 권한을 나타내는 문자열의 접두어에 기본으로 ROLE_를 붙여주므로
