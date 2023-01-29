@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.core.AuthenticationException;
@@ -43,24 +42,23 @@ public class JwtAuthenticationFailureHandler implements AuthenticationFailureHan
     }
 
     private String getErrorMessage(AuthenticationException exception) {
-        String errorMessage = messageSource.getMessage("confirm.emailOrPassword", null, getDefault());
-
-        if(exception instanceof UsernameNotFoundException){
-            errorMessage = messageSource.getMessage("confirm.email", null, getDefault());
+        // 공통 메세지를 사용하려면 예외 던질 시 메세지에 null을 넣는다.
+        if(exception.getMessage() != null) {
+            return exception.getMessage();
         }
 
-        if(exception instanceof BadCredentialsException){
-            errorMessage = messageSource.getMessage("confirm.pwd", null, getDefault());
+        if (exception instanceof UsernameNotFoundException) {
+            return messageSource.getMessage("confirm.email", null, getDefault());
         }
 
-        if(exception instanceof InsufficientAuthenticationException){
-            errorMessage = messageSource.getMessage("error.extraAuth", null, getDefault());
+        if (exception instanceof BadCredentialsException) {
+            return messageSource.getMessage("confirm.pwd", null, getDefault());
         }
 
-        if(exception instanceof AuthenticationServiceException){
-            errorMessage = exception.getMessage();
+        if (exception instanceof InsufficientAuthenticationException) {
+            return messageSource.getMessage("error.extraAuth", null, getDefault());
         }
 
-        return errorMessage;
+        return messageSource.getMessage("confirm.emailOrPassword", null, getDefault());
     }
 }
