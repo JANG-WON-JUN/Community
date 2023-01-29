@@ -8,6 +8,10 @@ import static java.time.LocalDateTime.now;
 
 public class CommonUtils {
 
+    public static LocalDateTime relativeMinuteFromNow(int minutes) {
+        return now().plusMinutes(minutes);
+    }
+
     public static LocalDateTime relativeDayFromNow(int days){
         return now().plusDays(days);
     }
@@ -25,5 +29,4 @@ public class CommonUtils {
         }
         return ObjectUtils.isEmpty(str.trim());
     }
-
 }
