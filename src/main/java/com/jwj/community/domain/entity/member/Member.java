@@ -9,7 +9,10 @@ import com.jwj.community.domain.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "MEMBER_TB")
@@ -46,17 +49,17 @@ public class Member extends BaseEntity {
     private RefreshToken refreshToken;
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MemberLevelLog> memberLevelLogs;
+    private List<MemberLevelLog> memberLevelLogs = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<EmailAuth> emailAuths;
+    private List<EmailAuth> emailAuths = new ArrayList<>();
 
     // 만약 mappedBy할 대상이 복합키를 가지고 있다면, (복합키 필드명.복합키안의 필드명) 이렇게 설정해주면 된다.
     @OneToMany(mappedBy = "id.member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<MemberRoles> memberRoles;
+    private Set<MemberRoles> memberRoles = new HashSet<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private List<Board> boards;
+    private List<Board> boards = new ArrayList<>();
 
     @Builder
     public Member(String email, String name, BirthDay birthDay, Sex sex, State state) {
@@ -69,5 +72,9 @@ public class Member extends BaseEntity {
 
     public void changeState(State state) {
         this.state = state;
+    }
+
+    public void addRole(MemberRoles memberRole) {
+        memberRoles.add(memberRole);
     }
 }
