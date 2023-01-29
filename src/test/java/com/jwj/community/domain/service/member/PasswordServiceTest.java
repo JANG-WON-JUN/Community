@@ -62,11 +62,10 @@ class PasswordServiceTest {
     void addFailCount() {
         // given
         Integer loginFailCount = loginFailSuccessively(1);
-        boolean loginLocked = password.isLoginLocked();
 
         // expected
         assertThat(loginFailCount).isEqualTo(1);
-        assertThat(loginLocked).isFalse();
+        assertThat(password.isLoginLocked()).isFalse();
     }
 
     @Test
@@ -77,11 +76,10 @@ class PasswordServiceTest {
 
         // when
         password.loginLock();
-        boolean loginLocked = password.isLoginLocked();
 
         // then
         assertThat(loginFailCount).isEqualTo(5);
-        assertThat(loginLocked).isTrue();
+        assertThat(password.isLoginLocked()).isTrue();
     }
 
     @Test
@@ -92,11 +90,10 @@ class PasswordServiceTest {
 
         // when
         password.loginLock();
-        boolean isReleasable = password.isReleasableLoginLock();
 
         // then
         assertThat(loginFailCount).isEqualTo(5);
-        assertThat(isReleasable).isFalse();
+        assertThat(password.isReleasableLoginLock()).isFalse();
     }
 
     @Test
@@ -110,12 +107,11 @@ class PasswordServiceTest {
         password.loginLock();
         boolean isReleasable = password.isReleasableLoginLock();
         password.releaseLoginLock();
-        boolean isLoginLocked = password.isLoginLocked();
 
         // then
         assertThat(loginFailCount).isEqualTo(5);
         assertThat(isReleasable).isFalse();
-        assertThat(isLoginLocked).isFalse();
+        assertThat(password.isLoginLocked()).isFalse();
     }
 
     private Integer loginFailSuccessively(int time){
