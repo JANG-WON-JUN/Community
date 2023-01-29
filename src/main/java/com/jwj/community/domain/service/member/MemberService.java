@@ -46,6 +46,11 @@ public class MemberService {
         savedMember.addRole(savedMemberRoles);
 
         passwordService.createPassword(password);
+    }
 
+    public Member findByEmail(String email) {
+        // todo Member없을 때 CustomException 구축해야 함
+        return memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException());
     }
 }
