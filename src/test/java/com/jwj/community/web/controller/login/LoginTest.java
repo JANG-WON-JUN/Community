@@ -260,4 +260,22 @@ public class LoginTest {
                 .andExpect(jsonPath("exceptionName").value(USERNAME_NOT_FOUND_EX_NAME))
             .andDo(print());
     }
+
+    @Test
+    @DisplayName("로그인 시 이메일은 맞는데 비밀번호 잘못 입력 시 실패 횟수 증가")
+    void passwordFailCountTest() throws Exception{
+        Login login = Login.builder()
+                .email(TEST_EMAIL)
+                .password("틀린 비밀번호")
+                .build();
+
+        mockMvc.perform(post("/api/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(login)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("errorCode").value("401"))
+                .andExpect(jsonPath("errorMessage").value(passwordNotMatchMessage))
+                .andExpect(jsonPath("exceptionName").value(BAD_CREDENTIALS_EX_NAME))
+            .andDo(print());
+    }
 }
