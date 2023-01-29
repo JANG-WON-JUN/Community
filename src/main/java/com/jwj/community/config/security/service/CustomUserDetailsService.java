@@ -15,22 +15,20 @@ import static java.util.Locale.getDefault;
 import static java.util.stream.Collectors.toList;
 
 /**
- * // 사용자 정보를 확인하는 UserDetailsService 클래스
+ * 사용자 정보를 확인하는 UserDetailsService 클래스
  */
 @Service
 @RequiredArgsConstructor
 public class CustomUserDetailsService implements UserDetailsService {
 
+    // MemberService로 변경하면 순환참조 오류 발생하므로 MemberRepository로 선언
     private final MemberRepository memberRepository;
     private final MessageSource messageSource;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Member member = memberRepository.findByEmail(email);
-
-        if(member == null){
-            throw new UsernameNotFoundException(messageSource.getMessage("error.notExistMember", null, getDefault()));
-        }
+        Member member = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException(messageSource.getMessage("error.notExistMember", null, getDefault())));
 
         return new LoginContext(member,
                 member.getMemberRoles()

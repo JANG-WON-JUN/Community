@@ -13,11 +13,13 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class RefreshTokenService {
 
+    // MemberService로 변경하면 순환참조 오류 발생하므로 MemberRepository로 선언
     private final MemberRepository memberRepository;
     private final RefreshTokenRepository refreshTokenRepository;
 
     public void createRefreshToken(RefreshToken refreshToken, String email){
-        Member savedMember = memberRepository.findByEmail(email);
+        Member savedMember = memberRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException());
         RefreshToken savedRefreshToken = refreshTokenRepository.save(refreshToken);
 
         savedRefreshToken.setMember(savedMember);
