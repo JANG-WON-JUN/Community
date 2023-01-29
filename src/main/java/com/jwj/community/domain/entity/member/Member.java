@@ -74,6 +74,11 @@ public class Member extends BaseEntity {
         this.state = state;
     }
 
+
+    public void changeRefreshToken(RefreshToken refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
     public void addRole(MemberRoles memberRole) {
         memberRoles.add(memberRole);
     }
