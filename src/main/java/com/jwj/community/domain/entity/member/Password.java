@@ -58,7 +58,7 @@ public class Password extends BaseEntity {
     }
 
     public boolean isPossibleLoginCheck(){
-        return loginFailCount < 5 && loginLockTime == null;
+        return (loginFailCount == null || loginFailCount < 5) && loginLockTime == null;
     }
 
     public Integer addLoginFailCount(){
@@ -67,13 +67,13 @@ public class Password extends BaseEntity {
     }
 
     public void loginLock(){
-        if(loginFailCount < 5) return;
+        if(loginFailCount == null || loginFailCount < 5) return;
 
         loginLockTime = relativeMinuteFromNow(1);
     }
 
     public boolean isLoginLocked(){
-        if(loginLockTime == null){
+        if(loginFailCount == null || loginLockTime == null){
             return false;
         }
         Duration duration = between(loginLockTime, releaseLoginLockTime);
