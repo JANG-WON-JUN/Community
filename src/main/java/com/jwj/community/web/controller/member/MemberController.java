@@ -18,7 +18,7 @@ public class MemberController {
 
     @PostMapping("/api/join")
     public ResponseEntity<String> join(@RequestBody MemberCreate memberCreate){
-        memberService.join(memberCreate.toEntity(), memberCreate.getPassword().toEntity());
+        memberService.createMember(memberCreate.toEntity(), memberCreate.getPassword().toEntity());
 
         return ResponseEntity.ok().body(null);
     }
