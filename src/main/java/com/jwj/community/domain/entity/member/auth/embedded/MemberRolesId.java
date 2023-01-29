@@ -6,9 +6,12 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 // 엔티티에 포함되는 embedded 객체도 기본생성자 필요
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberRolesId {
 
@@ -20,4 +23,9 @@ public class MemberRolesId {
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role;
 
+    @Builder
+    public MemberRolesId(Member member, Role role){
+        this.member = member;
+        this.role = role;
+    }
 }
