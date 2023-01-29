@@ -13,7 +13,7 @@ public class PasswordService {
 
     private final PasswordRepository passwordRepository;
 
-    public void save(Password password){
+    public void createPassword(Password password){
         password.extendBeChangedDate();
         passwordRepository.save(password);
     }
