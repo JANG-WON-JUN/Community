@@ -19,5 +19,4 @@ public class ErrorResult {
         this.exception = exception;
         this.exceptionName = exception.getClass().getSimpleName();
     }
-
 }
