@@ -4,8 +4,10 @@ import com.jwj.community.domain.entity.member.Member;
 import com.jwj.community.domain.enums.Sex;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class MemberCreate {
 
     private String email;
