@@ -2,6 +2,8 @@ package com.jwj.community.config.security.provider;
 
 import com.jwj.community.config.security.config.LoginContext;
 import com.jwj.community.config.security.token.JwtAuthenticationToken;
+import com.jwj.community.domain.entity.member.Password;
+import com.jwj.community.web.exception.LoginLockedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -26,12 +28,21 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
 
-        String username = authentication.getName();
-        String password = (String) authentication.getCredentials();
+        String email = authentication.getName();
+        String requestedPassword = (String) authentication.getCredentials();
 
-        LoginContext loginContext = (LoginContext) userDetailsService.loadUserByUsername(username);
+        LoginContext loginContext = (LoginContext) userDetailsService.loadUserByUsername(email);
+        Password password = loginContext.getMember().getPassword();
 
-        if(!passwordEncoder.matches(password, loginContext.getMember().getPassword().getPassword())){
+        if(!password.isPossibleLoginCheck() && password.isLoginLocked()){
+            throw new LoginLockedException(messageSource.getMessage("error.loginLocked", null, getDefault()));
+        }
+
+        if(!passwordEncoder.matches(requestedPassword, password.getPassword())){
+            // 비밀번호 5회 입력 실패 시 로그인 1분 정지
+            if(password.addLoginFailCount() >= 5){
+                password.loginLock();
+            }
             throw new BadCredentialsException(messageSource.getMessage("confirm.pwd.not.match", null, getDefault()));
         }
 
