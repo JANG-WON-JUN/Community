@@ -43,11 +43,7 @@ public class Password extends BaseEntity {
     }
 
     @Transient
-    private final Integer LOGIN_LOCK_LIMIT = 60; // 초 단위
-
-    @Setter
-    @Transient
-    private LocalDateTime releaseLoginLockTime = now();
+    private final Integer LOGIN_LOCK_LIMIT_MINUTE = 1;
 
     public void extendBeChangedDate() {
         this.beChangedDate = relativeMonthFromNow(3);
@@ -67,25 +63,27 @@ public class Password extends BaseEntity {
     }
 
     public void loginLock(){
-        if(loginFailCount == null || loginFailCount < 5) return;
+        if(loginFailCount == null || loginFailCount < 5){
+            return;
+        }
 
-        loginLockTime = relativeMinuteFromNow(1);
+        loginLockTime = relativeMinuteFromNow(LOGIN_LOCK_LIMIT_MINUTE);
     }
 
     public boolean isLoginLocked(){
-        if(loginFailCount == null || loginLockTime == null){
-            return false;
-        }
-        Duration duration = between(loginLockTime, releaseLoginLockTime);
-        return duration.getSeconds() <= LOGIN_LOCK_LIMIT && loginFailCount >= 5;
+        return loginFailCount >= 5;
     }
 
     public boolean isReleasableLoginLock(){
+        return isReleasableLoginLock(now());
+    }
+
+    public boolean isReleasableLoginLock(LocalDateTime time){
         if(loginLockTime == null){
             return true;
         }
-        Duration duration = between(loginLockTime, releaseLoginLockTime);
-        return duration.getSeconds() > LOGIN_LOCK_LIMIT && loginFailCount >= 5;
+        Duration duration = between(loginLockTime, time);
+        return duration.getSeconds() > 0 && loginFailCount >= 5;
     }
 
     public void releaseLoginLock(){
