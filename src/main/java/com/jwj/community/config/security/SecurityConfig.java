@@ -6,6 +6,7 @@ import com.jwj.community.config.security.handler.JwtAuthenticationFailureHandler
 import com.jwj.community.config.security.handler.JwtAuthenticationSuccessHandler;
 import com.jwj.community.config.security.provider.JwtAuthenticationProvider;
 import com.jwj.community.config.security.utils.JwtTokenUtil;
+import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.domain.service.member.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -17,7 +18,6 @@ import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
@@ -33,6 +33,8 @@ public class SecurityConfig {
     // todo JwtAuthenticationFilter를 구현하여 매 요청마다 JWT 토큰이 유요한지 체크 및 테스트를 작성해야 한다.
     private final UserDetailsService userDetailsService;
     private final MessageSource messageSource;
+    private final PasswordEncoder passwordEncoder;
+    private final MemberService memberService;
     private final ObjectMapper mapper;
     private final JwtTokenUtil jwtTokenUtil;
     private final RefreshTokenService refreshTokenService;
@@ -73,13 +75,8 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager() {
         List<AuthenticationProvider> authenticationProviders = new ArrayList<>();
-        authenticationProviders.add(new JwtAuthenticationProvider(userDetailsService, passwordEncoder(), messageSource));
+        authenticationProviders.add(new JwtAuthenticationProvider(userDetailsService, passwordEncoder, messageSource));
         return new ProviderManager(authenticationProviders);
-    }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new BCryptPasswordEncoder();
     }
 
     @Bean
