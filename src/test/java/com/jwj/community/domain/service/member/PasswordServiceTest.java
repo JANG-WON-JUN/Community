@@ -15,7 +15,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.jwj.community.domain.enums.Sex.MALE;
-import static java.time.LocalDateTime.now;
+import static com.jwj.community.utils.CommonUtils.relativeMinuteFromNow;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @Slf4j
@@ -103,14 +103,15 @@ class PasswordServiceTest {
         Integer loginFailCount = loginFailSuccessively(5);
 
         // when
-        password.setReleaseLoginLockTime(now());
         password.loginLock();
         boolean isReleasable = password.isReleasableLoginLock();
+        boolean isReleasableAfterAMinute = password.isReleasableLoginLock(relativeMinuteFromNow(2));
         password.releaseLoginLock();
 
         // then
         assertThat(loginFailCount).isEqualTo(5);
         assertThat(isReleasable).isFalse();
+        assertThat(isReleasableAfterAMinute).isTrue();
         assertThat(password.isLoginLocked()).isFalse();
     }
 

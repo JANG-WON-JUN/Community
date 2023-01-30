@@ -1,6 +1,8 @@
 package com.jwj.community.web.controller.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jwj.community.domain.entity.member.Member;
+import com.jwj.community.domain.entity.member.Password;
 import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.dto.member.login.Login;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
@@ -20,7 +22,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.jwj.community.domain.enums.Sex.MALE;
+import static com.jwj.community.utils.CommonUtils.relativeMinuteFromNow;
 import static java.util.Locale.getDefault;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -51,11 +55,13 @@ public class LoginTest {
     private String confirmPasswordMessage;
     private String passwordNotMatchMessage;
     private String notExistMemberMessage;
+    private String loginLockedMessage;
 
     private final String TEST_EMAIL = "admin@google.com";
     private final String TEST_PASSWORD = "1234";
     private final String USERNAME_NOT_FOUND_EX_NAME = "UsernameNotFoundException";
     private final String BAD_CREDENTIALS_EX_NAME = "BadCredentialsException";
+    private final String LOGIN_LOCKED_EX_NAME = "LoginLockedException";
 
     @BeforeEach
     public void setup(){
@@ -63,6 +69,7 @@ public class LoginTest {
         confirmPasswordMessage = messageSource.getMessage("confirm.pwd", null, getDefault());
         passwordNotMatchMessage = messageSource.getMessage("confirm.pwd.not.match", null, getDefault());
         notExistMemberMessage = messageSource.getMessage("error.notExistMember", null, getDefault());
+        loginLockedMessage = messageSource.getMessage("error.loginLocked", null, getDefault());
 
         // 회원 등록
         BirthDayCreate birthDay = BirthDayCreate.builder()
@@ -277,5 +284,116 @@ public class LoginTest {
                 .andExpect(jsonPath("errorMessage").value(passwordNotMatchMessage))
                 .andExpect(jsonPath("exceptionName").value(BAD_CREDENTIALS_EX_NAME))
             .andDo(print());
+
+        Member saveMember = memberService.findByEmail(TEST_EMAIL);
+        assertThat(saveMember.getPassword().getLoginFailCount()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("비밀번호 5번 실패 시 맞는 비밀번호로 로그인해도 로그인 제한하기")
+    void loginLockTest() throws Exception{
+        loginFailSuccessively(5);
+
+        Login login = Login.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        mockMvc.perform(post("/api/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(login)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("errorCode").value("401"))
+                .andExpect(jsonPath("errorMessage").value(loginLockedMessage))
+                .andExpect(jsonPath("exceptionName").value(LOGIN_LOCKED_EX_NAME))
+                .andDo(print());
+
+        Member saveMember = memberService.findByEmail(TEST_EMAIL);
+        assertThat(saveMember.getPassword().getLoginFailCount()).isEqualTo(5);
+    }
+
+    @Test
+    @DisplayName("비밀번호 5번 실패 시 로그인 제한 후 1분 이내에 로그인 제한 풀 수 있는지 확인")
+    void isReleasableLoginLockTest() throws Exception{
+        loginFailSuccessively(5);
+
+        Login login = Login.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        mockMvc.perform(post("/api/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(login)))
+                .andExpect(status().isUnauthorized())
+                .andExpect(jsonPath("errorCode").value("401"))
+                .andExpect(jsonPath("errorMessage").value(loginLockedMessage))
+                .andExpect(jsonPath("exceptionName").value(LOGIN_LOCKED_EX_NAME))
+                .andDo(print());
+
+        Member saveMember = memberService.findByEmail(TEST_EMAIL);
+        assertThat(saveMember.getPassword().isReleasableLoginLock()).isFalse();
+    }
+
+    @Test
+    @DisplayName("비밀번호 5번 실패 시 로그인 제한시간이 지나서 로그인 제한 풀 수 있는지 확인")
+    void isReleasableLoginLockAfterAMinuteTest() throws Exception{
+        loginFailSuccessively(5);
+
+        Member saveMember = memberService.findByEmail(TEST_EMAIL);
+        Password password = saveMember.getPassword();
+
+        // 로그인 제한이 풀리는 시간을 now로 입력하고 Lock 설정 후 바로 해제.
+        password.loginLock();
+        boolean isReleasableAfterAMinute = password.isReleasableLoginLock(relativeMinuteFromNow(2));
+
+        // 5번 실패 후 1분이 지난 상태에서는 아직 로그인 제한 걸려있지만 로그인 제한 풀 수 있는지 체크
+        assertThat(isReleasableAfterAMinute).isTrue();
+        assertThat(password.isLoginLocked()).isTrue();
+    }
+
+    @Test
+    @DisplayName("비밀번호 5번 실패 시 로그인 제한 후 1분 지나서 로그인 제한 풀리고 로그인 가능한지 확인")
+    void isPossibleAfterLoginLockReleaseTest() throws Exception{
+        loginFailSuccessively(5);
+
+        Member saveMember = memberService.findByEmail(TEST_EMAIL);
+        Password password = saveMember.getPassword();
+
+        password.loginLock();
+        password.isReleasableLoginLock(relativeMinuteFromNow(2));
+        password.releaseLoginLock();
+
+        Login login = Login.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        mockMvc.perform(post("/api/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(login)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("token.accessToken").isNotEmpty())
+                .andExpect(jsonPath("token.refreshToken").isNotEmpty())
+                .andExpect(jsonPath("email").value(TEST_EMAIL))
+                .andExpect(jsonPath("name").value("어드민"))
+                .andDo(print());
+
+        assertThat(password.getLoginLockTime()).isNull();
+        assertThat(password.getLoginFailCount()).isZero();
+        assertThat(password.isLoginLocked()).isFalse();
+    }
+
+    private void loginFailSuccessively(int time) throws Exception {
+        Login login = Login.builder()
+                .email(TEST_EMAIL)
+                .password("틀린 비밀번호")
+                .build();
+
+        for(int i = 0; i < time; i++){
+            mockMvc.perform(post("/api/login")
+                    .contentType(APPLICATION_JSON_VALUE)
+                    .content(mapper.writeValueAsString(login)));
+        }
     }
 }
