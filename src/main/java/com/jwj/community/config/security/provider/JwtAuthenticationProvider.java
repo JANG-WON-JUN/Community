@@ -27,7 +27,6 @@ public class JwtAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-
         String email = authentication.getName();
         String requestedPassword = (String) authentication.getCredentials();
 
