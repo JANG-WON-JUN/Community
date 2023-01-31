@@ -50,7 +50,6 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "varchar(7)")
     private State state;
 
-    @Setter
     @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
     private Password password;
 
@@ -79,6 +78,11 @@ public class Member extends BaseEntity {
         this.state = state;
     }
 
+    public void setPassword(Password password) {
+        this.password = password;
+        password.setMember(this);
+    }
+
     public void changeState(State state) {
         this.state = state;
     }
@@ -96,8 +100,7 @@ public class Member extends BaseEntity {
     }
 
     /**
-     * 레벨업 했을 때 true / 레벨업 안 했을 때 false
-     * @return
+     * @return 레벨업 했을 때 true / 레벨업 안 했을 때 false
      */
     public boolean levelUp(){
         Level level = Level.findLevel(levelPoint);
