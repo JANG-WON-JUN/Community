@@ -92,7 +92,11 @@ public class Member extends BaseEntity {
     }
 
     public void addRole(MemberRoles memberRole) {
+        if(memberRoles.size() > 0) {
+            memberRoles.remove(memberRole);
+        }
         memberRoles.add(memberRole);
+        memberRole.getId().setMember(this);
     }
 
     public int addLevelPoint(){
