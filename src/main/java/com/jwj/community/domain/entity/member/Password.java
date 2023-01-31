@@ -57,7 +57,7 @@ public class Password extends BaseEntity {
         return loginFailCount < 5 && loginLockTime == null;
     }
 
-    public Integer addLoginFailCount(){
+    public int addLoginFailCount(){
         return ++loginFailCount;
     }
 
