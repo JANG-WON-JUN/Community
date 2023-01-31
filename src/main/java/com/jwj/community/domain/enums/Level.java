@@ -26,5 +26,4 @@ public enum Level {
                 .findFirst()
                 .orElse(LEVEL1);
     }
-
 }
