@@ -115,8 +115,8 @@ class PasswordServiceTest {
         assertThat(password.isLoginLocked()).isFalse();
     }
 
-    private Integer loginFailSuccessively(int time){
-        for(int i = 0; i < time; i++){
+    private Integer loginFailSuccessively(int count){
+        for(int i = 0; i < count; i++){
             password.addLoginFailCount();
         }
         return password.getLoginFailCount();
