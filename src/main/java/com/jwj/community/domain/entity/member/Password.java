@@ -28,7 +28,7 @@ public class Password extends BaseEntity {
 
     private LocalDateTime beChangedDate; // 비밀번호가 변경되어야 하는 날짜
 
-    private Integer loginFailCount;
+    private int loginFailCount;
 
     private LocalDateTime loginLockTime;
 
@@ -54,16 +54,15 @@ public class Password extends BaseEntity {
     }
 
     public boolean isPossibleLoginCheck(){
-        return (loginFailCount == null || loginFailCount < 5) && loginLockTime == null;
+        return loginFailCount < 5 && loginLockTime == null;
     }
 
     public Integer addLoginFailCount(){
-        loginFailCount = loginFailCount == null ? 1 : loginFailCount + 1;
-        return loginFailCount;
+        return ++loginFailCount;
     }
 
     public void loginLock(){
-        if(loginFailCount == null || loginFailCount < 5){
+        if(loginFailCount < 5){
             return;
         }
 
