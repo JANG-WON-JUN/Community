@@ -32,15 +32,14 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         Member member = (Member) authentication.getPrincipal();
         JwtToken jwtToken = jwtTokenUtil.generateToken(member);
-        String email = member.getEmail();
         LoginSuccess loginSuccess = LoginSuccess.builder()
                 .token(jwtToken)
-                .email(email)
+                .email(member.getEmail())
                 .name(member.getName())
                 .build();
 
         addLevelPoint(member);
-        saveRefreshToken(jwtToken, email);
+        saveRefreshToken(jwtToken, member.getEmail());
 
         response.setStatus(OK.value());
         response.setContentType(APPLICATION_JSON_VALUE);
@@ -54,9 +53,9 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
     }
 
     private void saveRefreshToken(JwtToken jwtToken, String email) {
-        RefreshTokenCreate refreshTokenCreate = RefreshTokenCreate.builder()
+        RefreshTokenCreate rtCreate = RefreshTokenCreate.builder()
                 .refreshToken(jwtToken.getRefreshToken())
                 .build();
-        refreshTokenService.createRefreshToken(refreshTokenCreate.toEntity(), email);
+        refreshTokenService.createRefreshToken(rtCreate.toEntity(), email);
     }
 }
