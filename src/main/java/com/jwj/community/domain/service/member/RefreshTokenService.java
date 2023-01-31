@@ -21,7 +21,6 @@ public class RefreshTokenService {
         Member savedMember = memberRepository.findByEmail(email);
         RefreshToken savedRefreshToken = refreshTokenRepository.save(refreshToken);
 
-        savedRefreshToken.setMember(savedMember);
         savedMember.changeRefreshToken(savedRefreshToken);
     }
 }
