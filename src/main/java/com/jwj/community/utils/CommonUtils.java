@@ -1,8 +1,11 @@
 package com.jwj.community.utils;
 
+import com.querydsl.core.BooleanBuilder;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.util.ObjectUtils;
 
 import java.time.LocalDateTime;
+import java.util.function.Supplier;
 
 import static java.time.LocalDateTime.now;
 
@@ -28,5 +31,13 @@ public class CommonUtils {
             return true;
         }
         return ObjectUtils.isEmpty(str.trim());
+    }
+
+    public static BooleanBuilder nullSafeBuilder(Supplier<BooleanExpression> f) {
+        try {
+            return new BooleanBuilder(f.get());
+        } catch (IllegalArgumentException e) {
+            return new BooleanBuilder();
+        }
     }
 }
