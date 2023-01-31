@@ -33,7 +33,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         return new LoginContext(member,
                 member.getMemberRoles()
                         .stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getId().getRole().getRoleName().name()))
+                        .map(role -> new SimpleGrantedAuthority(role.getMemberRole().name()))
                         .collect(toList()));
     }
 }
