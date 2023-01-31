@@ -1,8 +1,11 @@
 package com.jwj.community.domain.enums;
 
+import com.google.common.collect.Range;
 import lombok.AllArgsConstructor;
 
 import java.util.Arrays;
+
+import static com.google.common.collect.Range.closed;
 
 @AllArgsConstructor
 public enum Level {
@@ -22,8 +25,12 @@ public enum Level {
 
     public static Level findLevel(Integer levelPoint){
         return Arrays.stream(Level.values())
-                .filter(level -> (level.minPoint <= levelPoint && level.maxPoint >= levelPoint))
+                .filter(level -> levelRange(level).test(levelPoint))
                 .findFirst()
                 .orElse(LEVEL1);
+    }
+
+    private static Range<Integer> levelRange(Level level){
+        return closed(level.minPoint, level.maxPoint);
     }
 }
