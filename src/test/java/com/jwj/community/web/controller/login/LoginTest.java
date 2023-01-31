@@ -17,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.MessageSource;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
@@ -382,6 +383,35 @@ public class LoginTest {
         assertThat(password.getLoginLockTime()).isNull();
         assertThat(password.getLoginFailCount()).isZero();
         assertThat(password.isLoginLocked()).isFalse();
+    }
+
+    @Test
+    @DisplayName("로그인 성공 시 레벨포인트 1증가")
+    @Rollback(false)
+    void addLevelPointTest() throws Exception{
+        Member saveMember = memberService.findByEmail(TEST_EMAIL);
+        Integer levelPointBf = saveMember.getLevelPoint();
+
+        Login login = Login.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        mockMvc.perform(post("/api/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(login)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("token.accessToken").isNotEmpty())
+                .andExpect(jsonPath("token.refreshToken").isNotEmpty())
+                .andExpect(jsonPath("email").value(TEST_EMAIL))
+                .andExpect(jsonPath("name").value("어드민"))
+                .andDo(print());
+        Integer levelPointAf = saveMember.getLevelPoint();
+
+        System.out.println("levelPointBf = " + levelPointBf);
+        System.out.println("levelPointAf = " + levelPointAf);
+        assertThat(levelPointAf - levelPointBf).isEqualTo(1);
+
     }
 
     private void loginFailSuccessively(int time) throws Exception {

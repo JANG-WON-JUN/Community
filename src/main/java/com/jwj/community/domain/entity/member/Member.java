@@ -4,6 +4,7 @@ import com.jwj.community.domain.entity.BaseEntity;
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.entity.member.auth.MemberRoles;
 import com.jwj.community.domain.entity.member.embedded.BirthDay;
+import com.jwj.community.domain.enums.Level;
 import com.jwj.community.domain.enums.Sex;
 import com.jwj.community.domain.enums.State;
 import jakarta.persistence.*;
@@ -13,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import static java.lang.Integer.MAX_VALUE;
 
 @Entity
 @Table(name = "MEMBER_TB")
@@ -29,6 +32,12 @@ public class Member extends BaseEntity {
 
     @Column(columnDefinition = "varchar(100)")
     private String name;
+
+    private int levelPoint;
+
+    @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "varchar(10)")
+    private Level level;
 
     @Embedded
     private BirthDay birthDay;
@@ -74,12 +83,16 @@ public class Member extends BaseEntity {
         this.state = state;
     }
 
-
     public void changeRefreshToken(RefreshToken refreshToken) {
         this.refreshToken = refreshToken;
     }
 
     public void addRole(MemberRoles memberRole) {
         memberRoles.add(memberRole);
+    }
+
+    public int addLevelPoint(){
+        levelPoint = levelPoint + 1 < MAX_VALUE ? ++levelPoint : MAX_VALUE;
+        return levelPoint;
     }
 }

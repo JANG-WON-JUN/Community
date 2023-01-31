@@ -3,6 +3,7 @@ package com.jwj.community.config.security.handler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jwj.community.config.security.utils.JwtTokenUtil;
 import com.jwj.community.domain.entity.member.Member;
+import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.domain.service.member.RefreshTokenService;
 import com.jwj.community.web.dto.member.jwt.JwtToken;
 import com.jwj.community.web.dto.member.login.LoginSuccess;
@@ -22,6 +23,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHandler {
 
+    private final MemberService memberService;
     private final RefreshTokenService refreshTokenService;
     private final JwtTokenUtil jwtTokenUtil;
     private final ObjectMapper objectMapper;
@@ -30,13 +32,15 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         Member member = (Member) authentication.getPrincipal();
         JwtToken jwtToken = jwtTokenUtil.generateToken(member);
+        String email = member.getEmail();
         LoginSuccess loginSuccess = LoginSuccess.builder()
                 .token(jwtToken)
-                .email(member.getEmail())
+                .email(email)
                 .name(member.getName())
                 .build();
 
-        saveRefreshToken(jwtToken, member);
+        addLevelPoint(email);
+        saveRefreshToken(jwtToken, email);
 
         response.setStatus(OK.value());
         response.setContentType(APPLICATION_JSON_VALUE);
@@ -45,10 +49,14 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
         objectMapper.writeValue(response.getWriter(), loginSuccess);
     }
 
-    private void saveRefreshToken(JwtToken jwtToken, Member member) {
+    private void addLevelPoint(String email) {
+        memberService.addMemberPoint(email);
+    }
+
+    private void saveRefreshToken(JwtToken jwtToken, String email) {
         RefreshTokenCreate refreshTokenCreate = RefreshTokenCreate.builder()
                 .refreshToken(jwtToken.getRefreshToken())
                 .build();
-        refreshTokenService.createRefreshToken(refreshTokenCreate.toEntity(), member.getEmail());
+        refreshTokenService.createRefreshToken(refreshTokenCreate.toEntity(), email);
     }
 }
