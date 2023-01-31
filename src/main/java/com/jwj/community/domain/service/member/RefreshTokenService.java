@@ -18,8 +18,7 @@ public class RefreshTokenService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public void createRefreshToken(RefreshToken refreshToken, String email){
-        Member savedMember = memberRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException());
+        Member savedMember = memberRepository.findByEmail(email);
         RefreshToken savedRefreshToken = refreshTokenRepository.save(refreshToken);
 
         savedRefreshToken.setMember(savedMember);
