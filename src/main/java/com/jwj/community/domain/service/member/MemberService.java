@@ -1,8 +1,8 @@
 package com.jwj.community.domain.service.member;
 
 import com.jwj.community.domain.entity.member.Member;
+import com.jwj.community.domain.entity.member.MemberLevelLog;
 import com.jwj.community.domain.entity.member.Password;
-import com.jwj.community.domain.entity.member.auth.MemberRoles;
 import com.jwj.community.domain.entity.member.auth.Role;
 import com.jwj.community.domain.repository.member.MemberRepository;
 import com.jwj.community.domain.repository.member.auth.RoleRepository;
@@ -42,11 +42,16 @@ public class MemberService {
         //password.setMember(member);
 
         Member savedMember = memberRepository.save(member);
-        MemberRoles savedMemberRoles = memberRolesService.createMemberRoles(savedMember, role);
-
-        savedMember.addRole(savedMemberRoles);
+        savedMember.addRole(memberRolesService.createMemberRoles(savedMember, role));
 
         passwordService.createPassword(password);
+
+        MemberLevelLog memberLevelLog = MemberLevelLog.builder()
+                .levelPoint(savedMember.getLevelPoint())
+                .level(savedMember.getLevel())
+                .build();
+
+        memberLevelLogService.createLevelLog(savedMember, memberLevelLog);
     }
 
     public Member findByEmail(String email) {
@@ -56,8 +61,11 @@ public class MemberService {
     public void addMemberPoint(Member member) {
         member.addLevelPoint();
         if(member.levelUp()){
-            // 레벨업 성공 시 기록
-            // 가능하면 레벨 업 후 memberLog에 기록 후 member의 level도 업데이트 해줘야 함
+            MemberLevelLog memberLevelLog = MemberLevelLog.builder()
+                    .levelPoint(member.getLevelPoint())
+                    .level(member.getLevel())
+                    .build();
+            memberLevelLogService.createLevelLog(member, memberLevelLog);
         }
     }
 }
