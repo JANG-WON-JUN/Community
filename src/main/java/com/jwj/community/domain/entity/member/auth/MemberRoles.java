@@ -3,6 +3,7 @@ package com.jwj.community.domain.entity.member.auth;
 import com.jwj.community.domain.entity.BaseEntity;
 import com.jwj.community.domain.entity.member.Member;
 import com.jwj.community.domain.entity.member.auth.embedded.MemberRolesId;
+import com.jwj.community.domain.enums.Roles;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -28,20 +29,7 @@ public class MemberRoles extends BaseEntity {
                 .build();
     }
 
-    /*
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MemberRoles that = (MemberRoles) o;
-
-        return (id.getMember().getId() == that.getId().getMember().getId() &&
-                id.getRole().getId() == that.getId().getRole().getId());
+    public Roles getMemberRole(){
+        return id.getRole().getRoleName();
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id.getMember().getId() + id.getRole().getId());
-    }
-     */
 }
