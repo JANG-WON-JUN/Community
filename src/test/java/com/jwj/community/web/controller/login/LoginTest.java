@@ -9,7 +9,6 @@ import com.jwj.community.web.dto.member.login.Login;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.dto.member.request.PasswordCreate;
-import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@Slf4j
 @AutoConfigureMockMvc
 @SpringBootTest
 @ActiveProfiles("test") // test 시에는 test profile을 사용할 수 있도록 설정
