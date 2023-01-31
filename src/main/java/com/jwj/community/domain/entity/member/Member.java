@@ -92,7 +92,19 @@ public class Member extends BaseEntity {
     }
 
     public int addLevelPoint(){
-        levelPoint = levelPoint + 1 < MAX_VALUE ? ++levelPoint : MAX_VALUE;
-        return levelPoint;
+        return levelPoint + 1 < MAX_VALUE ? ++levelPoint : MAX_VALUE;
+    }
+
+    /**
+     * 레벨업 했을 때 true / 레벨업 안 했을 때 false
+     * @return
+     */
+    public boolean levelUp(){
+        Level level = Level.findLevel(levelPoint);
+        if(this.level != level){
+            this.level = level;
+            return true;
+        }
+        return false;
     }
 }

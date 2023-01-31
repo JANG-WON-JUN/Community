@@ -39,7 +39,7 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
                 .name(member.getName())
                 .build();
 
-        addLevelPoint(email);
+        addLevelPoint(member);
         saveRefreshToken(jwtToken, email);
 
         response.setStatus(OK.value());
@@ -49,8 +49,8 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
         objectMapper.writeValue(response.getWriter(), loginSuccess);
     }
 
-    private void addLevelPoint(String email) {
-        memberService.addMemberPoint(email);
+    private void addLevelPoint(Member member) {
+        memberService.addMemberPoint(member);
     }
 
     private void saveRefreshToken(JwtToken jwtToken, String email) {
