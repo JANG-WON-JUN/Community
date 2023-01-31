@@ -2,8 +2,10 @@ package com.jwj.community.web.controller.login;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jwj.community.domain.entity.member.Member;
+import com.jwj.community.domain.entity.member.MemberLevelLog;
 import com.jwj.community.domain.entity.member.Password;
 import com.jwj.community.domain.enums.Level;
+import com.jwj.community.domain.service.member.MemberLevelLogService;
 import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.dto.member.login.Login;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
@@ -21,6 +23,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static com.jwj.community.domain.enums.Level.LEVEL1;
 import static com.jwj.community.domain.enums.Level.LEVEL2;
@@ -52,6 +56,9 @@ public class LoginTest {
 
     @Autowired
     MemberService memberService;
+
+    @Autowired
+    MemberLevelLogService memberLevelLogService;
 
     private String confirmEmailMessage;
     private String confirmPasswordMessage;
@@ -414,7 +421,6 @@ public class LoginTest {
 
     @Test
     @DisplayName("로그인 시 레벨1에서 레벨2로 레벨업")
-    @Rollback(false)
     void levelUpTest() throws Exception{
         Member saveMember = memberService.findByEmail(TEST_EMAIL);
         Level levelBf = saveMember.getLevel();
@@ -442,6 +448,38 @@ public class LoginTest {
 
         assertThat(levelBf).isEqualTo(LEVEL1);
         assertThat(levelAf).isEqualTo(LEVEL2);
+    }
+
+    @Test
+    @DisplayName("로그인 시 레벨1에서 레벨2로 레벨업 후 레벨로그 insert")
+    @Rollback(false)
+    void levelLogTest() throws Exception{
+        Member saveMember = memberService.findByEmail(TEST_EMAIL);
+
+        for(int i = 0; i < 100; i++){
+            saveMember.addLevelPoint();
+        }
+
+        Login login = Login.builder()
+                .email(TEST_EMAIL)
+                .password(TEST_PASSWORD)
+                .build();
+
+        mockMvc.perform(post("/api/login")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(login)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("token.accessToken").isNotEmpty())
+                .andExpect(jsonPath("token.refreshToken").isNotEmpty())
+                .andExpect(jsonPath("email").value(TEST_EMAIL))
+                .andExpect(jsonPath("name").value("어드민"))
+                .andDo(print());
+
+        List<MemberLevelLog> logs = memberLevelLogService.findByEmail(TEST_EMAIL);
+
+        assertThat(logs.size()).isEqualTo(2);
+        assertThat(logs.get(0).getLevel()).isEqualTo(LEVEL1);
+        assertThat(logs.get(1).getLevel()).isEqualTo(LEVEL2);
     }
 
     private void loginFailSuccessively(int count) throws Exception {
