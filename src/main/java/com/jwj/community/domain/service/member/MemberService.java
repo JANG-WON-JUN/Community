@@ -31,10 +31,11 @@ public class MemberService {
 
         // 1. memberstate 기본값 주기
         member.changeState(ACTIVE);
+        member.levelUp(); // 기본 레벨 부여
         password.encodePassword(passwordEncoder);
         // todo MemberRoles 엔티티에 데이터 저장 후 member에 role 부여해야 됨
         // todo 이메일 인증기능 EmailAuth 엔티티에 데이터 저장 후 매핑해야 됨
-
+        // todo 회원가입 시 level1 부여 후 로그에 insert 해줘야 됨
         // password & member 연관관계
         // 2. password 연관관계 매핑
         member.setPassword(password);
@@ -54,12 +55,11 @@ public class MemberService {
                 .orElseThrow(() -> new IllegalArgumentException());
     }
 
-    public void addMemberPoint(String email) {
-        Member savedMember = findByEmail(email);
-        savedMember.addLevelPoint();
-
-        // todo 만약 여기서 member 레벨업 가능하니?
-        // 가능하면 레벨 업 후 memberLog에 기록 후 member의 level도 업데이트 해줘야 함
-        // 사실 createmember 할 때 level 1부여 후 insert해줘야됨
+    public void addMemberPoint(Member member) {
+        member.addLevelPoint();
+        if(member.levelUp()){
+            // 레벨업 성공 시 기록
+            // 가능하면 레벨 업 후 memberLog에 기록 후 member의 level도 업데이트 해줘야 함
+        }
     }
 }
