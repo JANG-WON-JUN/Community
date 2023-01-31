@@ -53,4 +53,13 @@ public class MemberService {
         return memberRepository.findByEmail(email)
                 .orElseThrow(() -> new IllegalArgumentException());
     }
+
+    public void addMemberPoint(String email) {
+        Member savedMember = findByEmail(email);
+        savedMember.addLevelPoint();
+
+        // todo 만약 여기서 member 레벨업 가능하니?
+        // 가능하면 레벨 업 후 memberLog에 기록 후 member의 level도 업데이트 해줘야 함
+        // 사실 createmember 할 때 level 1부여 후 insert해줘야됨
+    }
 }

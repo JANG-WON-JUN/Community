@@ -81,7 +81,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationSuccessHandler jwtAuthenticationSuccessHandler(){
-        return new JwtAuthenticationSuccessHandler(refreshTokenService, jwtTokenUtil, mapper);
+        return new JwtAuthenticationSuccessHandler(memberService, refreshTokenService, jwtTokenUtil, mapper);
     }
 
     @Bean
