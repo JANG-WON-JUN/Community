@@ -1,6 +1,8 @@
 package com.jwj.community.config.security.utils;
 
 import com.jwj.community.domain.entity.member.Member;
+import com.jwj.community.domain.entity.member.auth.MemberRoles;
+import com.jwj.community.domain.enums.Roles;
 import com.jwj.community.web.dto.member.jwt.JwtToken;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Header;
@@ -12,7 +14,9 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 
 import static com.jwj.community.utils.CommonUtils.isEmpty;
@@ -24,6 +28,7 @@ import static java.lang.System.currentTimeMillis;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.LocalDateTime.now;
 import static java.time.ZoneId.systemDefault;
+import static java.util.stream.Collectors.toSet;
 
 @Component
 public class JwtTokenUtil {
@@ -51,13 +56,14 @@ public class JwtTokenUtil {
      * jwt 토큰에서 권한조회 검색
      * 토큰을 다시 claims로 변환하면 String 값으로 변환되기 때문에
      * 다시 Set으로 만들어주어야 한다.
-
+     */
+    @SuppressWarnings("unchecked")
     public Set<Roles> getRolesFromToken(String token){
         Claims claims = getAllClaimsFromToken(token);
         List<String> roles = claims.get("roles", List.class);
-        return roles.stream().map(role -> Roles.findRole(role)).collect(toSet());
+        return roles.stream().map(Roles::findRole).collect(toSet());
     }
-     */
+
     // jwt 토큰에서 날짜 만료 검색
     public Date getExpirationDateFromToken(String token){
         return getClaimFromToken(token, Claims::getExpiration);
@@ -129,6 +135,7 @@ public class JwtTokenUtil {
                 .getBody();
     }
 
+    @SuppressWarnings("all")
     private Map<String, Object> getDefaultHeader(){
         Header header = Jwts.header();
         header.put("typ", "JWT");
@@ -137,9 +144,12 @@ public class JwtTokenUtil {
 
     private Map<String, Object> getDefaultClaims(Member member){
         Claims claims = new DefaultClaims();
+        Set<Roles> roles = member.getMemberRoles().stream()
+                .map(MemberRoles::getMemberRole)
+                .collect(toSet());
 
         claims.put("email", member.getEmail());
-        //claims.put("roles", member.getRoleSet());
+        claims.put("roles", roles);
 
         return claims;
     }
@@ -162,5 +172,4 @@ public class JwtTokenUtil {
         LocalDateTime rtExpTime = now().plusMonths(EXPIRE_MONTH);
         return Date.from(rtExpTime.atZone(systemDefault()).toInstant());
     }
-
 }
