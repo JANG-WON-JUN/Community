@@ -12,15 +12,17 @@ public class MemberCreate {
 
     private String email;
     private String name;
+    private String nickname;
     private PasswordCreate password;
     private BirthDayCreate birthDay;
     private Sex sex;
 
     @Builder
-    public MemberCreate(String email, String name, PasswordCreate password,
-                        BirthDayCreate birthDay, Sex sex) {
+    public MemberCreate(String email, String name, String nickname,
+                        PasswordCreate password, BirthDayCreate birthDay, Sex sex) {
         this.email = email;
         this.name = name;
+        this.nickname = nickname;
         this.password = password;
         this.birthDay = birthDay;
         this.sex = sex;
@@ -30,6 +32,7 @@ public class MemberCreate {
         return Member.builder()
                 .email(email)
                 .name(name)
+                .nickname(nickname)
                 .birthDay(birthDay.toBirthDay())
                 .sex(sex)
                 .build();

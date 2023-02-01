@@ -33,6 +33,9 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "varchar(100)")
     private String name;
 
+    @Column(columnDefinition = "varchar(100)")
+    private String nickname;
+
     private int levelPoint;
 
     @Enumerated(EnumType.STRING)
@@ -70,9 +73,11 @@ public class Member extends BaseEntity {
     private List<Board> boards = new ArrayList<>();
 
     @Builder
-    public Member(String email, String name, BirthDay birthDay, Sex sex, State state) {
+    public Member(String email, String name, String nickname,
+                  BirthDay birthDay, Sex sex, State state) {
         this.email = email;
         this.name = name;
+        this.nickname = nickname;
         this.birthDay = birthDay;
         this.sex = sex;
         this.state = state;
