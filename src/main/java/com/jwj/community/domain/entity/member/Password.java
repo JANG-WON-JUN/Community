@@ -45,6 +45,9 @@ public class Password extends BaseEntity {
     @Transient
     private final Integer LOGIN_LOCK_LIMIT_MINUTE = 1;
 
+    @Transient
+    private final Integer PASSWORD_CHANGE_PERIOD = 3;
+
     public void extendBeChangedDate() {
         this.beChangedDate = relativeMonthFromNow(3);
     }
@@ -88,5 +91,17 @@ public class Password extends BaseEntity {
     public void releaseLoginLock(){
         loginFailCount = 0;
         loginLockTime = null;
+    }
+
+    public boolean isRequiredPasswordChanged(){
+        return isRequiredPasswordChanged(now(), PASSWORD_CHANGE_PERIOD);
+    }
+
+    public boolean isRequiredPasswordChanged(LocalDateTime time, int passwordChangePeriod){
+        if(time == null){
+            return true;
+        }
+        Duration duration = between(beChangedDate.plusMonths(passwordChangePeriod), time);
+        return duration.getSeconds() < 0;
     }
 }

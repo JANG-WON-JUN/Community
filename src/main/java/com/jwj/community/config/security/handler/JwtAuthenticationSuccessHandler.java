@@ -36,6 +36,8 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
                 .token(jwtToken)
                 .email(member.getEmail())
                 .name(member.getName())
+                .nickname(member.getNickname())
+                .requiredPasswordChange(member.getPassword().isRequiredPasswordChanged())
                 .build();
 
         addLevelPoint(member);
