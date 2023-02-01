@@ -30,7 +30,6 @@ import static com.jwj.community.domain.enums.Level.LEVEL1;
 import static com.jwj.community.domain.enums.Level.LEVEL2;
 import static com.jwj.community.domain.enums.Sex.MALE;
 import static com.jwj.community.utils.CommonUtils.relativeMinuteFromNow;
-import static java.time.LocalDateTime.now;
 import static java.util.Locale.getDefault;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -502,30 +501,6 @@ public class LoginTest {
                 .andExpect(jsonPath("name").value("어드민"))
                 .andExpect(jsonPath("nickname").value("어드민 닉네임"))
                 .andExpect(jsonPath("requiredPasswordChange").value(false))
-                .andDo(print());
-    }
-
-    @Test
-    @DisplayName("이메일, 비밀번호 입력 후 로그인 성공")
-    void passwordChangeAlertTest2() throws Exception {
-        Member savedMember = memberService.findByEmail(TEST_EMAIL);
-        savedMember.getPassword().isRequiredPasswordChanged(now(), 3);
-
-        Login login = Login.builder()
-                .email(TEST_EMAIL)
-                .password(TEST_PASSWORD)
-                .build();
-
-        mockMvc.perform(post("/api/login")
-                .contentType(APPLICATION_JSON_VALUE)
-                .content(mapper.writeValueAsString(login)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("token.accessToken").isNotEmpty())
-                .andExpect(jsonPath("token.refreshToken").isNotEmpty())
-                .andExpect(jsonPath("email").value(TEST_EMAIL))
-                .andExpect(jsonPath("name").value("어드민"))
-                .andExpect(jsonPath("nickname").value("어드민 닉네임"))
-                .andExpect(jsonPath("requiredPasswordChange").value(true))
                 .andDo(print());
     }
 

@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 import static com.jwj.community.utils.CommonUtils.relativeMinuteFromNow;
@@ -49,7 +48,7 @@ public class Password extends BaseEntity {
     private final Integer PASSWORD_CHANGE_PERIOD = 3;
 
     public void extendBeChangedDate() {
-        this.beChangedDate = relativeMonthFromNow(3);
+        this.beChangedDate = relativeMonthFromNow(PASSWORD_CHANGE_PERIOD);
     }
 
     public void encodePassword(PasswordEncoder passwordEncoder){
@@ -84,8 +83,8 @@ public class Password extends BaseEntity {
         if(loginLockTime == null){
             return true;
         }
-        Duration duration = between(loginLockTime, time);
-        return duration.getSeconds() > 0 && loginFailCount >= 5;
+        return between(loginLockTime, time).getSeconds() > 0
+                && loginFailCount >= 5;
     }
 
     public void releaseLoginLock(){
@@ -94,14 +93,13 @@ public class Password extends BaseEntity {
     }
 
     public boolean isRequiredPasswordChanged(){
-        return isRequiredPasswordChanged(now(), PASSWORD_CHANGE_PERIOD);
+        return isRequiredPasswordChanged(now());
     }
 
-    public boolean isRequiredPasswordChanged(LocalDateTime time, int passwordChangePeriod){
+    public boolean isRequiredPasswordChanged(LocalDateTime time){
         if(time == null){
             return true;
         }
-        Duration duration = between(beChangedDate.plusMonths(passwordChangePeriod), time);
-        return duration.getSeconds() < 0;
+        return between(beChangedDate, time).getSeconds() > 0;
     }
 }
