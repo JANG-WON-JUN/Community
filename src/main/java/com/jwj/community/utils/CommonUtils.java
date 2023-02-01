@@ -24,10 +24,7 @@ public class CommonUtils {
     }
 
     public static boolean isEmpty(String str){
-        if(str == null){
-            return true;
-        }
-        if("null".equals(str)){
+        if(str == null || "null".equals(str)){
             return true;
         }
         return ObjectUtils.isEmpty(str.trim());
