@@ -149,8 +149,8 @@ public class JwtTokenFactory {
                 .build();
     }
 
-    private void addUserRole(Member member){
-        addRole(member, ROLE_USER);
+    private void addAnonymousRole(Member member){
+        addRole(member, ROLE_ANONYMOUS);
     }
 
     private void addMemberRole(Member member){
