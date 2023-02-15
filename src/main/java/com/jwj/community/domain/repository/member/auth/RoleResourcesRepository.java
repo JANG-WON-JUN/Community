@@ -10,6 +10,6 @@ import java.util.List;
 public interface RoleResourcesRepository extends JpaRepository<RoleResources, RoleResourcesId> {
 
     // QueryDsl에서 EmbeddedId를 지원하지 않으므로 Query Methods로 처리
-    List<RoleResources> findByIdRoleRoleName(Roles roleName);
+    List<RoleResources> findByIdRoleRoleName(Roles role);
 
 }
