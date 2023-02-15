@@ -1,6 +1,7 @@
 package com.jwj.community.domain.service.member.auth;
 
 import com.jwj.community.domain.entity.member.auth.Role;
+import com.jwj.community.domain.enums.Roles;
 import com.jwj.community.domain.repository.member.auth.RoleRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,5 +16,9 @@ public class RoleService {
 
     public void createRole(Role role){
         roleRepository.save(role);
+    }
+
+    public Role findByRoleName(Roles role){
+        return roleRepository.findByRoleName(role);
     }
 }
