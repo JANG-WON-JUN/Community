@@ -37,6 +37,9 @@ public class initService {
 
     private void roleInit(){
         for(Roles role : Roles.values()){
+            if(role == ROLE_ANONYMOUS) {
+                continue;
+            }
             RoleCreate roleCreate = RoleCreate.builder()
                     .role(role)
                     .roleDesc(role.getRoleName())
@@ -46,7 +49,7 @@ public class initService {
     }
 
     private void resourcesInit(){
-        String[] basicResources = {"/api/**", "/api/member/**", "/api/admin/**"};
+        String[] basicResources = {"/api/member/**", "/api/admin/**"};
 
         for(int i = 0; i < basicResources.length; i++){
             ResourcesCreate resourcesCreate = ResourcesCreate.builder()
@@ -60,14 +63,16 @@ public class initService {
     }
 
     private void roleResourcesInit(){
+        Role role;
         List<Resources> resources = resourcesService.findByResourceType(URL);
 
         for(Resources resource : resources){
-            Role role = switch(resource.getResourceName()){
-                case "/api/member/**" -> roleService.findByRoleName(ROLE_MEMBER);
-                case "/api/admin/**" -> roleService.findByRoleName(ROLE_ADMIN);
-                default -> roleService.findByRoleName(ROLE_ANONYMOUS);
-            };
+
+            if("/api/member/**".equals(resource.getResourceName())){
+                role = roleService.findByRoleName(ROLE_MEMBER);
+            }else{
+                role = roleService.findByRoleName(ROLE_ADMIN);
+            }
 
             RoleResources roleResources = RoleResources.builder()
                     .role(role)
