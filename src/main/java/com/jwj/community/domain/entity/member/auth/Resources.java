@@ -5,6 +5,7 @@ import com.jwj.community.domain.enums.HttpMethod;
 import com.jwj.community.domain.enums.ResourceType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -30,4 +31,12 @@ public class Resources extends BaseEntity {
     @Column(columnDefinition = "varchar(10)")
     private ResourceType resourceType;
 
+    @Builder
+    public Resources(String resourceName, HttpMethod httpMethod,
+                     Integer orderNum, ResourceType resourceType) {
+        this.resourceName = resourceName;
+        this.httpMethod = httpMethod;
+        this.orderNum = orderNum;
+        this.resourceType = resourceType;
+    }
 }
