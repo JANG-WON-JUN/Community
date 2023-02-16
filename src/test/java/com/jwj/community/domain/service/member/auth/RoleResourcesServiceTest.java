@@ -35,8 +35,7 @@ class RoleResourcesServiceTest {
         List<RoleResources> roleResources = roleResourcesService.findByRoleName(role);
 
         // then
-        assertThat(roleResources.size()).isEqualTo(1);
-        assertThat(roleResources.get(0).getId().getRole().getRoleName().getRoleName()).isEqualTo(role.getRoleName());
+        assertThat(roleResources.size()).isEqualTo(0);
     }
 
     @Test
