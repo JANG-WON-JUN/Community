@@ -12,4 +12,6 @@ public interface MemberQueryRepository {
 
     Member findByEmail(String email, Supplier<? extends RuntimeException> exceptionSupplier) throws RuntimeException;
 
+    Member findByNickname(String nickname) throws UsernameNotFoundException;
+
 }
