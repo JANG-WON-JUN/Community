@@ -38,8 +38,22 @@ public class MemberQueryRepositoryImpl implements MemberQueryRepository {
         return Optional.ofNullable(member).orElseThrow(exceptionSupplier);
     }
 
+    @Override
+    public Member findByNickname(String nickname) throws UsernameNotFoundException {
+        Member member = queryFactory
+                .selectFrom(QMember.member)
+                .where(nicknameEq(nickname))
+                .fetchOne();
+
+        return Optional.ofNullable(member).orElseThrow(() -> new UsernameNotFoundException(null));
+    }
+
     private BooleanBuilder emailEq(String email) {
         return nullSafeBuilder(() -> member.email.eq(email));
+    }
+
+    private BooleanBuilder nicknameEq(String nickname) {
+        return nullSafeBuilder(() -> member.nickname.eq(nickname));
     }
 
 }

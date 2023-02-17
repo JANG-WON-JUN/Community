@@ -68,4 +68,8 @@ public class MemberService {
             memberLevelLogService.createLevelLog(member, memberLevelLog);
         }
     }
+
+    public Member findByNickname(String nickname) {
+        return memberRepository.findByNickname(nickname);
+    }
 }
