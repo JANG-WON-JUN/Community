@@ -13,14 +13,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class MemberCreate {
 
-    @Email
-    @NotBlank
+    @Email(message = "{field.required.emailFormat}")
+    @NotBlank(message = "{field.required.email}")
     private String email;
 
-    @NotBlank
+    @NotBlank(message = "{field.required.name}")
     private String name;
 
-    @NotBlank
+    @NotBlank(message = "{field.required.nickname}")
     private String nickname;
 
     private PasswordCreate password;
