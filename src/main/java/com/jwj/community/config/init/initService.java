@@ -3,10 +3,13 @@ package com.jwj.community.config.init;
 import com.jwj.community.domain.entity.member.auth.Resources;
 import com.jwj.community.domain.entity.member.auth.Role;
 import com.jwj.community.domain.entity.member.auth.RoleResources;
+import com.jwj.community.domain.enums.BoardTypes;
 import com.jwj.community.domain.enums.Roles;
+import com.jwj.community.domain.service.board.BoardTypeService;
 import com.jwj.community.domain.service.member.auth.ResourcesService;
 import com.jwj.community.domain.service.member.auth.RoleResourcesService;
 import com.jwj.community.domain.service.member.auth.RoleService;
+import com.jwj.community.web.dto.board.request.BoardTypeCreate;
 import com.jwj.community.web.dto.member.auth.dto.ResourcesCreate;
 import com.jwj.community.web.dto.member.auth.dto.RoleCreate;
 import jakarta.annotation.PostConstruct;
@@ -14,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static com.jwj.community.domain.enums.ResourceType.URL;
@@ -27,12 +31,14 @@ public class initService {
     private final RoleService roleService;
     private final ResourcesService resourcesService;
     private final RoleResourcesService roleResourcesService;
+    private final BoardTypeService boardTypeService;
 
     @PostConstruct
     public void init(){
         roleInit();
         resourcesInit();
         roleResourcesInit();
+        boardTypesInit();
     }
 
     private void roleInit(){
@@ -81,5 +87,16 @@ public class initService {
 
             roleResourcesService.createRoleResources(roleResources);
         }
+    }
+
+    private void boardTypesInit(){
+        Arrays.stream(BoardTypes.values())
+                .forEach(boardTypes -> {
+                    BoardTypeCreate boardTypeCreate = BoardTypeCreate.builder()
+                            .boardType(boardTypes)
+                            .build();
+
+                    boardTypeService.createBoardType(boardTypeCreate.toEntity());
+                });
     }
 }
