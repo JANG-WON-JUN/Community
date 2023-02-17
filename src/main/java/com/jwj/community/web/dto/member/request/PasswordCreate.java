@@ -10,10 +10,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class PasswordCreate {
 
-    @NotBlank
+    @NotBlank(message = "{field.required.password}")
     private String password;
 
-    @NotBlank
+    @NotBlank(message = "{field.required.confirmPassword}")
     private String confirmPassword;
 
     @Builder

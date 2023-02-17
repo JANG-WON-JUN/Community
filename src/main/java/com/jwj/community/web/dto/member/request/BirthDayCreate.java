@@ -13,16 +13,16 @@ import org.hibernate.validator.constraints.Range;
 @NoArgsConstructor
 public class BirthDayCreate {
 
-    @NotBlank
-    @Min(value = 1990)
+    @NotBlank(message = "{field.required.birthYear}")
+    @Min(value = 1990, message = "{field.range.birthYear}")
     private Integer year;
 
-    @NotBlank
-    @Range(min = 1, max = 12)
+    @NotBlank(message = "{field.required.birthMonth}")
+    @Range(min = 1, max = 12, message = "{field.range.birthMonth}")
     private Integer month;
 
-    @NotBlank
-    @Range(min = 1, max = 31)
+    @NotBlank(message = "{field.required.birthDay}")
+    @Range(min = 1, max = 31, message = "{field.range.birthDay}")
     private Integer day;
 
     @Builder
