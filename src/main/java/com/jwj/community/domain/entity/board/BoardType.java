@@ -4,6 +4,7 @@ import com.jwj.community.domain.entity.BaseEntity;
 import com.jwj.community.domain.enums.BoardTypes;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -21,4 +22,8 @@ public class BoardType extends BaseEntity {
     @Column(columnDefinition = "varchar(20)")
     private BoardTypes boardType;
 
+    @Builder
+    public BoardType(BoardTypes boardType) {
+        this.boardType = boardType;
+    }
 }
