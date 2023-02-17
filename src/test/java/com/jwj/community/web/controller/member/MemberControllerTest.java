@@ -1,7 +1,6 @@
 package com.jwj.community.web.controller.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jwj.community.domain.enums.Sex;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.dto.member.request.PasswordCreate;
@@ -12,13 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.jwj.community.domain.enums.Sex.MALE;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Slf4j
 @AutoConfigureMockMvc
@@ -34,8 +36,14 @@ class MemberControllerTest {
     @Autowired
     ObjectMapper mapper;
 
+    private final String TEST_EMAIL = "admin@google.com";
+    private final String TEST_NICKNAME = "nickname";
+    private final String TEST_NAME = "admin";
+    private final String TEST_PASSWORD = "password";
+
     @Test
     @DisplayName("회원가입하기 - 모든정보 입력 시 성공")
+    @Rollback(false)
     void joinWithAllInfoTest() throws Exception {
         BirthDayCreate birthDay = BirthDayCreate.builder()
                 .year(2023)
@@ -44,24 +52,23 @@ class MemberControllerTest {
                 .build();
 
         PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password("비밀번호")
+                .password(TEST_PASSWORD)
+                .confirmPassword(TEST_PASSWORD)
                 .build();
 
         MemberCreate memberCreate = MemberCreate.builder()
-                .email("admin@gmail.com")
-                .name("어드민")
+                .email(TEST_EMAIL)
+                .nickname(TEST_NICKNAME)
+                .name(TEST_NAME)
                 .password(passwordCreate)
                 .birthDay(birthDay)
-                .sex(Sex.MALE)
+                .sex(MALE)
                 .build();
 
-        log.info("member = {}", memberCreate);
-
         mockMvc.perform(post("/api/join")
-        .contentType(APPLICATION_JSON)
-        .content(mapper.writeValueAsString(memberCreate)))
-        .andDo(print());
-
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(memberCreate)))
+                .andExpect(status().isOk())
+                .andDo(print());
     }
-    
 }
