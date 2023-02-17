@@ -681,7 +681,7 @@ class MemberControllerTest {
     void birthDayRangeTest2() throws Exception {
         BirthDayCreate birthDay = BirthDayCreate.builder()
                 .year(1992)
-                .month(0)
+                .month(10)
                 .day(0)
                 .build();
 
