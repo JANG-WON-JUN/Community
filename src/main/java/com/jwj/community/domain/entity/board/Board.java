@@ -5,6 +5,7 @@ import com.jwj.community.domain.entity.member.Member;
 import com.jwj.community.domain.enums.State;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,4 +39,13 @@ public class Board extends BaseEntity {
     @JoinColumn(referencedColumnName = "id")
     private Member member;
 
+    @Builder
+    public Board(String title, String content, boolean tempSave,
+                 BoardType boardType, Member member) {
+        this.title = title;
+        this.content = content;
+        this.tempSave = tempSave;
+        this.boardType = boardType;
+        this.member = member;
+    }
 }
