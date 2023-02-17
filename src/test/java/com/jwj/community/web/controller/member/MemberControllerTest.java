@@ -1,6 +1,7 @@
 package com.jwj.community.web.controller.member;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.dto.member.request.PasswordCreate;
@@ -17,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static com.jwj.community.domain.enums.Sex.MALE;
 import static java.util.Locale.getDefault;
-import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -36,6 +36,9 @@ class MemberControllerTest {
 
     @Autowired
     ObjectMapper mapper;
+
+    @Autowired
+    MemberService memberService;
 
     @Autowired
     MessageSource messageSource;
@@ -145,7 +148,37 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 이메일은 중복되면 안됨")
     void emailDuplicateTest() throws Exception {
-        fail();
+        createMember();
+
+        BirthDayCreate birthDay = BirthDayCreate.builder()
+                .year(2023)
+                .month(1)
+                .day(28)
+                .build();
+
+        PasswordCreate passwordCreate = PasswordCreate.builder()
+                .password(TEST_PASSWORD)
+                .confirmPassword(TEST_PASSWORD)
+                .build();
+
+        MemberCreate memberCreate = MemberCreate.builder()
+                .email(TEST_EMAIL)
+                .nickname(TEST_NICKNAME)
+                .name(TEST_NAME)
+                .password(passwordCreate)
+                .birthDay(birthDay)
+                .sex(MALE)
+                .build();
+
+        mockMvc.perform(post("/api/join")
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(memberCreate)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errorCode").value("400"))
+                .andExpect(jsonPath("errorMessage").value(messageSource.getMessage("error.badRequest", null, getDefault())))
+                .andExpect(jsonPath("fieldErrors[0].field").value("email"))
+                .andExpect(jsonPath("fieldErrors[0].errorMessage").value(messageSource.getMessage("duplicate.email", null, getDefault())))
+                .andDo(print());
     }
 
     @Test
@@ -219,7 +252,37 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 닉네임은 중복되면 안됨")
     void nicknameDuplicateTest() throws Exception {
-        fail();
+        createMember();
+
+        BirthDayCreate birthDay = BirthDayCreate.builder()
+                .year(2023)
+                .month(1)
+                .day(28)
+                .build();
+
+        PasswordCreate passwordCreate = PasswordCreate.builder()
+                .password(TEST_PASSWORD)
+                .confirmPassword(TEST_PASSWORD)
+                .build();
+
+        MemberCreate memberCreate = MemberCreate.builder()
+                .email("anotherEmail@google.com")
+                .nickname(TEST_NICKNAME)
+                .name(TEST_NAME)
+                .password(passwordCreate)
+                .birthDay(birthDay)
+                .sex(MALE)
+                .build();
+
+        mockMvc.perform(post("/api/join")
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(memberCreate)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errorCode").value("400"))
+                .andExpect(jsonPath("errorMessage").value(messageSource.getMessage("error.badRequest", null, getDefault())))
+                .andExpect(jsonPath("fieldErrors[0].field").value("nickname"))
+                .andExpect(jsonPath("fieldErrors[0].errorMessage").value(messageSource.getMessage("duplicate.nickname", null, getDefault())))
+                .andDo(print());
     }
 
     @Test
@@ -291,7 +354,35 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 비밀번호와 비밀번호 확인은 동일해야함")
     void notMatchPasswordAndConfirmPasswordTest() throws Exception {
-        fail();
+        BirthDayCreate birthDay = BirthDayCreate.builder()
+                .year(2023)
+                .month(1)
+                .day(28)
+                .build();
+
+        PasswordCreate passwordCreate = PasswordCreate.builder()
+                .password("다른 비밀번호")
+                .confirmPassword(TEST_PASSWORD)
+                .build();
+
+        MemberCreate memberCreate = MemberCreate.builder()
+                .email(TEST_EMAIL)
+                .nickname(TEST_NICKNAME)
+                .name(TEST_NAME)
+                .password(passwordCreate)
+                .birthDay(birthDay)
+                .sex(MALE)
+                .build();
+
+        mockMvc.perform(post("/api/join")
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(memberCreate)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errorCode").value("400"))
+                .andExpect(jsonPath("errorMessage").value(messageSource.getMessage("error.badRequest", null, getDefault())))
+                .andExpect(jsonPath("fieldErrors[0].field").value("password"))
+                .andExpect(jsonPath("fieldErrors[0].errorMessage").value(messageSource.getMessage("confirm.pwd.not.match", null, getDefault())))
+                .andDo(print());
     }
 
     @Test
@@ -656,7 +747,35 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 입력받은 생년월일은 유효한 생년월일이어야 함")
     void birthDayValidTest() throws Exception {
-        fail();
+        BirthDayCreate birthDay = BirthDayCreate.builder()
+                .year(1992)
+                .month(2)
+                .day(31)
+                .build();
+
+        PasswordCreate passwordCreate = PasswordCreate.builder()
+                .password(TEST_PASSWORD)
+                .confirmPassword(TEST_PASSWORD)
+                .build();
+
+        MemberCreate memberCreate = MemberCreate.builder()
+                .email(TEST_EMAIL)
+                .nickname(TEST_NICKNAME)
+                .name(TEST_NAME)
+                .password(passwordCreate)
+                .birthDay(birthDay)
+                .sex(MALE)
+                .build();
+
+        mockMvc.perform(post("/api/join")
+                .contentType(APPLICATION_JSON)
+                .content(mapper.writeValueAsString(memberCreate)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errorCode").value("400"))
+                .andExpect(jsonPath("errorMessage").value(messageSource.getMessage("error.badRequest", null, getDefault())))
+                .andExpect(jsonPath("fieldErrors[0].field").value("birthDay"))
+                .andExpect(jsonPath("fieldErrors[0].errorMessage").value(messageSource.getMessage("confirm.birthDay", null, getDefault())))
+                .andDo(print());
     }
 
     @Test
@@ -692,4 +811,27 @@ class MemberControllerTest {
                 .andDo(print());
     }
 
+    private void createMember(){
+        BirthDayCreate birthDay = BirthDayCreate.builder()
+                .year(1992)
+                .month(3)
+                .day(31)
+                .build();
+
+        PasswordCreate passwordCreate = PasswordCreate.builder()
+                .password(TEST_PASSWORD)
+                .confirmPassword(TEST_PASSWORD)
+                .build();
+
+        MemberCreate memberCreate = MemberCreate.builder()
+                .email(TEST_EMAIL)
+                .nickname(TEST_NICKNAME)
+                .name(TEST_NAME)
+                .password(passwordCreate)
+                .birthDay(birthDay)
+                .sex(MALE)
+                .build();
+
+        memberService.createMember(memberCreate.toEntity(), memberCreate.getPassword().toEntity());
+    }
 }
