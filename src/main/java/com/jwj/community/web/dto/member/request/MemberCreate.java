@@ -2,6 +2,7 @@ package com.jwj.community.web.dto.member.request;
 
 import com.jwj.community.domain.entity.member.Member;
 import com.jwj.community.domain.enums.Sex;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -23,11 +24,13 @@ public class MemberCreate {
     @NotBlank(message = "{field.required.nickname}")
     private String nickname;
 
+    @Valid // dto 내부 필드의 유효성 검사를 할 때 @Valid를 붙이면 됨
     private PasswordCreate password;
 
+    @Valid
     private BirthDayCreate birthDay;
 
-    @NotNull
+    @NotNull(message = "{field.required.sex}")
     private Sex sex;
 
     @Builder

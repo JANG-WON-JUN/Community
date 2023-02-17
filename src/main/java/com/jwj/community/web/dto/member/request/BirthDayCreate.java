@@ -2,7 +2,7 @@ package com.jwj.community.web.dto.member.request;
 
 import com.jwj.community.domain.entity.member.embedded.BirthDay;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,15 +13,15 @@ import org.hibernate.validator.constraints.Range;
 @NoArgsConstructor
 public class BirthDayCreate {
 
-    @NotBlank(message = "{field.required.birthYear}")
+    @NotNull(message = "{field.required.birthYear}")
     @Min(value = 1990, message = "{field.range.birthYear}")
     private Integer year;
 
-    @NotBlank(message = "{field.required.birthMonth}")
+    @NotNull(message = "{field.required.birthMonth}")
     @Range(min = 1, max = 12, message = "{field.range.birthMonth}")
     private Integer month;
 
-    @NotBlank(message = "{field.required.birthDay}")
+    @NotNull(message = "{field.required.birthDay}")
     @Range(min = 1, max = 31, message = "{field.range.birthDay}")
     private Integer day;
 
