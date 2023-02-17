@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Range;
 
+import static com.jwj.community.utils.CommonUtils.isValidDate;
+
 @Data
 // DTO 안에 DTO가 들어가고, @RequestBody로 매핑하기 위해선 기본생성자가 필요하다.
 @NoArgsConstructor
@@ -38,5 +40,9 @@ public class BirthDayCreate {
                 .month(month)
                 .day(day)
                 .build();
+    }
+
+    public boolean isValidBirthDay(){
+        return isValidDate(year, month, day);
     }
 }

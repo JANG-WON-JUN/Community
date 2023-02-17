@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import static com.jwj.community.utils.CommonUtils.isEmpty;
+
 @Data
 @NoArgsConstructor
 public class PasswordCreate {
@@ -26,5 +28,13 @@ public class PasswordCreate {
         return Password.builder()
                 .password(password)
                 .build();
+    }
+
+    public boolean isMatchedPasswordAndConfirmPassword(){
+        if(isEmpty(password) || isEmpty(confirmPassword)){
+            return false;
+        }
+
+        return password.equals(confirmPassword);
     }
 }

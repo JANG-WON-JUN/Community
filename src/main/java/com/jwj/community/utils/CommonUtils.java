@@ -4,6 +4,8 @@ import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import org.springframework.util.ObjectUtils;
 
+import java.time.DateTimeException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.function.Supplier;
 
@@ -35,6 +37,19 @@ public class CommonUtils {
             return new BooleanBuilder(f.get());
         } catch (IllegalArgumentException e) {
             return new BooleanBuilder();
+        }
+    }
+
+    public static boolean isValidDate(Integer year, Integer month, Integer day){
+        if (year == null || month == null || day == null){
+            return false;
+        }
+
+        try {
+            LocalDate.of(year, month, day);
+            return true;
+        }catch (DateTimeException ex) {
+            return false;
         }
     }
 }
