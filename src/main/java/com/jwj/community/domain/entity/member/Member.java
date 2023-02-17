@@ -33,7 +33,7 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "varchar(100)")
     private String name;
 
-    @Column(columnDefinition = "varchar(100)")
+    @Column(unique = true, columnDefinition = "varchar(100)")
     private String nickname;
 
     private int levelPoint;
