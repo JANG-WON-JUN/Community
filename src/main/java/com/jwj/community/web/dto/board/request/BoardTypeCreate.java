@@ -2,7 +2,7 @@ package com.jwj.community.web.dto.board.request;
 
 import com.jwj.community.domain.entity.board.BoardType;
 import com.jwj.community.domain.enums.BoardTypes;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardTypeCreate {
 
-    @NotBlank(message = "{field.required.boardType}")
+    @NotNull(message = "{field.required.boardType}")
     private BoardTypes boardType;
 
     @Builder
