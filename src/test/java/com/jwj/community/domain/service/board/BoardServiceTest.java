@@ -32,8 +32,6 @@ class BoardServiceTest {
     private final String TEST_TITLE = "글 제목";
     private final String TEST_CONTENT = "글 내용";
 
-    private Member savedMember;
-
     @BeforeEach
     public void setup(){
         // 회원 등록
@@ -57,8 +55,6 @@ class BoardServiceTest {
                 .build();
 
         memberService.createMember(memberCreate.toEntity(), memberCreate.getPassword().toEntity());
-        savedMember = memberService.findByEmail(TEST_EMAIL);
-        System.out.println();
     }
 
     @Test
@@ -79,10 +75,10 @@ class BoardServiceTest {
 
         // when
         Long savedId = boardService.createBoard(boardCreate.toEntity(), TEST_EMAIL);
+        Member savedMember = memberService.findByEmail(TEST_EMAIL);
 
         // then
         assertThat(savedId).isEqualTo(1);
         assertThat(savedMember.getBoards().size()).isEqualTo(1);
     }
-
 }
