@@ -51,23 +51,12 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 모든정보 입력 시 성공")
     void joinWithAllInfoTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password(validPasswordCreate())
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -81,22 +70,11 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 이메일은 필수입력")
     void emailRequiredTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password(validPasswordCreate())
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -114,23 +92,12 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 이메일 형식이 맞아야 함")
     void emailFormatTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email("형식에 맞치 않는 이메일!")
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password(validPasswordCreate())
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -150,23 +117,12 @@ class MemberControllerTest {
     void emailDuplicateTest() throws Exception {
         createMember();
 
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password(validPasswordCreate())
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -184,23 +140,12 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 이름은 필수입력")
     void nameRequiredTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name("")
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password(validPasswordCreate())
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -218,23 +163,12 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 닉네임은 필수입력")
     void nicknameRequiredTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(null)
                 .name(TEST_NAME)
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password(validPasswordCreate())
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -254,23 +188,12 @@ class MemberControllerTest {
     void nicknameDuplicateTest() throws Exception {
         createMember();
 
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email("anotherEmail@google.com")
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password(validPasswordCreate())
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -288,12 +211,6 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 비밀번호는 필수입력")
     void passwordRequiredTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
         PasswordCreate passwordCreate = PasswordCreate.builder()
                 .confirmPassword(TEST_PASSWORD)
                 .build();
@@ -303,7 +220,7 @@ class MemberControllerTest {
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
                 .password(passwordCreate)
-                .birthDay(birthDay)
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -321,12 +238,6 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 비밀번호 확인은 필수입력")
     void confirmPasswordRequiredTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
         PasswordCreate passwordCreate = PasswordCreate.builder()
                 .password(TEST_PASSWORD)
                 .build();
@@ -336,7 +247,7 @@ class MemberControllerTest {
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
                 .password(passwordCreate)
-                .birthDay(birthDay)
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -354,12 +265,6 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 비밀번호와 비밀번호 확인은 동일해야함")
     void notMatchPasswordAndConfirmPasswordTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
         PasswordCreate passwordCreate = PasswordCreate.builder()
                 .password("다른 비밀번호")
                 .confirmPassword(TEST_PASSWORD)
@@ -370,7 +275,7 @@ class MemberControllerTest {
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
                 .password(passwordCreate)
-                .birthDay(birthDay)
+                .birthDay(validBirthDayCreate())
                 .sex(MALE)
                 .build();
 
@@ -393,16 +298,11 @@ class MemberControllerTest {
                 .day(28)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -427,16 +327,11 @@ class MemberControllerTest {
                 .day(28)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -457,16 +352,11 @@ class MemberControllerTest {
                 .day(28)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -490,16 +380,11 @@ class MemberControllerTest {
                 .day(28)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -524,16 +409,11 @@ class MemberControllerTest {
                 .day(28)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -554,16 +434,11 @@ class MemberControllerTest {
                 .day(28)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -588,16 +463,11 @@ class MemberControllerTest {
                 .day(28)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -621,16 +491,11 @@ class MemberControllerTest {
                 .month(3)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -655,16 +520,11 @@ class MemberControllerTest {
                 .day(31)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -685,16 +545,11 @@ class MemberControllerTest {
                 .day(0)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -719,16 +574,11 @@ class MemberControllerTest {
                 .day(32)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -753,16 +603,11 @@ class MemberControllerTest {
                 .day(31)
                 .build();
 
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
+                .password(validPasswordCreate())
                 .birthDay(birthDay)
                 .sex(MALE)
                 .build();
@@ -781,23 +626,12 @@ class MemberControllerTest {
     @Test
     @DisplayName("회원가입하기 - 성별은 필수입력")
     void sexRequiredTest() throws Exception {
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(1992)
-                .month(3)
-                .day(31)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .confirmPassword(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
                 .name(TEST_NAME)
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password(validPasswordCreate())
+                .birthDay(validBirthDayCreate())
                 .build();
 
         mockMvc.perform(post("/api/join")
@@ -833,5 +667,20 @@ class MemberControllerTest {
                 .build();
 
         memberService.createMember(memberCreate.toEntity(), memberCreate.getPassword().toEntity());
+    }
+
+    private BirthDayCreate validBirthDayCreate(){
+        return BirthDayCreate.builder()
+                .year(1992)
+                .month(3)
+                .day(31)
+                .build();
+    }
+
+    private PasswordCreate validPasswordCreate(){
+        return PasswordCreate.builder()
+                .password(TEST_PASSWORD)
+                .confirmPassword(TEST_PASSWORD)
+                .build();
     }
 }
