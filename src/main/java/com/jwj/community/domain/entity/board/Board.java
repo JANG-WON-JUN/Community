@@ -4,10 +4,7 @@ import com.jwj.community.domain.entity.BaseEntity;
 import com.jwj.community.domain.entity.member.Member;
 import com.jwj.community.domain.enums.State;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "BOARD_TB")
@@ -33,6 +30,7 @@ public class Board extends BaseEntity {
     private boolean tempSave;
 
     @OneToOne
+    @Setter
     private BoardType boardType;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,12 +38,14 @@ public class Board extends BaseEntity {
     private Member member;
 
     @Builder
-    public Board(String title, String content, boolean tempSave,
-                 BoardType boardType, Member member) {
+    public Board(String title, String content, boolean tempSave, BoardType boardType) {
         this.title = title;
         this.content = content;
         this.tempSave = tempSave;
         this.boardType = boardType;
+    }
+
+    public void setWriter(Member member){
         this.member = member;
     }
 }
