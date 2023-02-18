@@ -120,4 +120,12 @@ public class Member extends BaseEntity {
         }
         return false;
     }
+
+    public void addBoard(Board board){
+        if(boards.size() > 0) {
+            boards.remove(board);
+        }
+        board.setWriter(this);
+        boards.add(board);
+    }
 }
