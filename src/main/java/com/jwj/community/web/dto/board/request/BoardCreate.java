@@ -1,9 +1,9 @@
 package com.jwj.community.web.dto.board.request;
 
 import com.jwj.community.domain.entity.board.Board;
-import com.jwj.community.domain.entity.member.Member;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,13 +21,20 @@ public class BoardCreate {
     @Valid
     private BoardTypeCreate boardType;
 
-    public Board toEntity(Member member){
+    @Builder
+    public BoardCreate(String title, String content, boolean tempSave, BoardTypeCreate boardType) {
+        this.title = title;
+        this.content = content;
+        this.tempSave = tempSave;
+        this.boardType = boardType;
+    }
+
+    public Board toEntity(){
         return Board.builder()
                 .title(title)
                 .content(content)
                 .tempSave(tempSave)
                 .boardType(boardType.toEntity())
-                .member(member)
                 .build();
     }
 }
