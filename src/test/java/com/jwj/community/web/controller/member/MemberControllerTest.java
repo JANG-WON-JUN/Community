@@ -42,7 +42,7 @@ class MemberControllerTest {
 
     @Test
     @DisplayName("회원가입하기 - 모든정보 입력 시 성공")
-    void joinWithAllInfoTest() throws Exception {
+    void createWithAllInfoTest() throws Exception {
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname(TEST_NICKNAME)
