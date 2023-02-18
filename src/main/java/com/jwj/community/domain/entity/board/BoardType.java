@@ -19,7 +19,7 @@ public class BoardType extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "varchar(20)")
+    @Column(unique = true, columnDefinition = "varchar(20)")
     private BoardTypes boardType;
 
     @Builder
