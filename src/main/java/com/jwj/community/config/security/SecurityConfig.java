@@ -63,17 +63,13 @@ public class SecurityConfig {
     private final RefreshTokenService refreshTokenService;
     private final RoleResourcesService roleResourcesService;
 
-    private final String[] whiteList = {
-            "/api/login", "/api/join", "/api/board"
-    };
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizationManager<RequestAuthorizationContext> access) throws Exception {
         // 어떤 요청이던 access 클래스로 전달한다.
         http
             .authorizeHttpRequests(authorize -> authorize
                     .requestMatchers("/api/member/**", "/api/admin/**").access(access)
-                    .requestMatchers(whiteList).permitAll()
+                    .anyRequest().permitAll()
             );
 
         http.sessionManagement()
