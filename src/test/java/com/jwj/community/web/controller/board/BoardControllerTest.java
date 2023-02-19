@@ -1,11 +1,11 @@
 package com.jwj.community.web.controller.board;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jwj.community.config.security.token.JwtAuthenticationToken;
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.service.board.BoardService;
 import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.annotation.ControllerTest;
+import com.jwj.community.web.annotation.WithTestUser;
 import com.jwj.community.web.common.paging.request.BoardSearchCondition;
 import com.jwj.community.web.dto.board.request.BoardCreate;
 import com.jwj.community.web.dto.board.request.BoardEdit;
@@ -19,13 +19,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import static com.jwj.community.domain.enums.BoardTypes.DAILY;
@@ -99,8 +94,8 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
     @DisplayName("글 등록하기 - 모든정보 입력 시 성공")
+    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void createWithAllInfoTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
@@ -118,8 +113,8 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
     @DisplayName("글 등록하기 - 글 제목은 필수입력")
+    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void titleRequiredTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .content(TEST_CONTENT)
@@ -139,8 +134,8 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
     @DisplayName("글 등록하기 - 글 내용은 빈값허용")
+    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void allowBlankContentTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
@@ -158,8 +153,8 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
     @DisplayName("글 등록하기 - 글 내용은 null 허용")
+    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void allowNullContentTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
@@ -177,8 +172,8 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
     @DisplayName("글 등록하기 - 게시판 타입은 필수입력")
+    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void boardTypeRequiredTest() throws Exception{
         BoardTypeCreate boardTypeCreate = BoardTypeCreate.builder()
                 .boardType(null)
@@ -203,7 +198,6 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
     @DisplayName("글 리스트 조회하기")
     void boardListTest() throws Exception{
         IntStream.rangeClosed(1, 7).forEach(i -> createBoard());
@@ -242,8 +236,8 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
     @DisplayName("글 수정하기 - 글 수정 성공")
+    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void boardSaveTest() throws Exception{
         Board originalBoard = boardService.getBoard(createBoard());
         BoardEdit boardEdit = BoardEdit.builder()
@@ -262,8 +256,8 @@ class BoardControllerTest {
     }
 
     @Test
-    @WithMockUser
     @DisplayName("글 수정하기 - 글 제목은 필수입력")
+    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void editBoardRequiredTitleTest() throws Exception{
         Board originalBoard = boardService.getBoard(createBoard());
         BoardEdit boardEdit = BoardEdit.builder()
@@ -284,6 +278,7 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 수정하기 - 글을 작성한 사용자가 아니면 수정 불가")
+    @WithTestUser(email = TEST_ANOTHER_EMAIL, role = ROLE_MEMBER)
     void editBoardWriterFailTest() throws Exception{
         Board originalBoard = boardService.getBoard(createBoard());
         BoardEdit boardEdit = BoardEdit.builder()
@@ -292,15 +287,6 @@ class BoardControllerTest {
                 .content(originalBoard.getContent())
                 .tempSave(originalBoard.isTempSave())
                 .build();
-
-        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-
-        authorities.clear();
-        authorities.add(new SimpleGrantedAuthority(ROLE_MEMBER.name()));
-
-        SecurityContextHolder.clearContext();
-        SecurityContextHolder.getContext()
-                .setAuthentication(new JwtAuthenticationToken(TEST_ANOTHER_EMAIL, "1234", authorities));
 
         mockMvc.perform(patch("/api/member/board/{id}", 1L)
                 .contentType(APPLICATION_JSON_VALUE)
