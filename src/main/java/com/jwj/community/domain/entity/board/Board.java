@@ -6,6 +6,8 @@ import com.jwj.community.domain.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static com.jwj.community.domain.enums.State.ACTIVE;
+import static com.jwj.community.domain.enums.State.DISABLE;
 import static java.lang.Integer.MAX_VALUE;
 
 @Entity
@@ -27,7 +29,7 @@ public class Board extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(columnDefinition = "varchar(7)")
-    private State state;
+    private State state = ACTIVE;
 
     private boolean tempSave;
 
@@ -60,5 +62,13 @@ public class Board extends BaseEntity {
 
     public int increaseViews(){
         return views + 1 < MAX_VALUE ? ++views : MAX_VALUE;
+    }
+
+    public void deActivate(){
+        state = DISABLE;
+    }
+
+    public void activate(){
+        state = ACTIVE;
     }
 }
