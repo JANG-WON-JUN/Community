@@ -17,7 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.List;
@@ -445,7 +444,6 @@ public class LoginTest {
 
     @Test
     @DisplayName("로그인 시 레벨1에서 레벨2로 레벨업 후 레벨로그 insert")
-    @Rollback(false)
     void levelLogTest() throws Exception{
         Member saveMember = memberService.findByEmail(TEST_EMAIL);
 

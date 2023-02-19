@@ -1,5 +1,6 @@
 package com.jwj.community.web.exception.advice;
 
+import com.jwj.community.web.exception.CommunityException;
 import com.jwj.community.web.exception.dto.ErrorResult;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
@@ -19,8 +20,8 @@ public class ExControllerAdvice {
 
     private final MessageSource messageSource;
 
-    @ExceptionHandler
     @ResponseBody // ExceptionHandler에서 json으로 넘길 때!
+    @ExceptionHandler
     public ResponseEntity<ErrorResult> invalidRequestHandler(BindException e){
         String errorMessage = messageSource.getMessage("error.badRequest", null, getDefault());
 
@@ -36,6 +37,20 @@ public class ExControllerAdvice {
         for(FieldError fieldError : e.getFieldErrors()){
             errorResult.addValidation(fieldError.getField(), fieldError.getDefaultMessage());
         }
+
+        return new ResponseEntity<>(errorResult, BAD_REQUEST);
+    }
+
+    @ResponseBody
+    @ExceptionHandler
+    public ResponseEntity<ErrorResult> commonExHandler(CommunityException e){
+        String errorMessage = messageSource.getMessage("error.noBoard", null, getDefault());
+
+        ErrorResult errorResult = ErrorResult.builder()
+                .errorCode(e.getStatusCode())
+                .errorMessage(e.getMessage())
+                .exception(e)
+                .build();
 
         return new ResponseEntity<>(errorResult, BAD_REQUEST);
     }
