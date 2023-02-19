@@ -20,6 +20,9 @@ public class BoardSearchCondition {
     @Builder.Default
     private int size = 10;
 
+    @Builder.Default
+    private boolean tempSave = false;
+
     public Pageable getPageable(){
         return PageRequest.of(max(0, page), min(size, MAX_SIZE));
     }
