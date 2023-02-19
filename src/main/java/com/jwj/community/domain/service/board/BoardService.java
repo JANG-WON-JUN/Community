@@ -33,7 +33,7 @@ public class BoardService {
     }
 
     public Page<Board> getBoards(BoardSearchCondition condition){
-        return boardRepository.boards(condition);
+        return boardRepository.getBoards(condition);
     }
 
     public Board getBoard(Long id){
@@ -68,7 +68,7 @@ public class BoardService {
     }
 
     private void isEditable(Board board, Member loggedInMember){
-        if(board.getMember().getId() != loggedInMember.getId()){
+        if(!board.getMember().getId().equals(loggedInMember.getId())){
             throw new CannotEditBoard(messageSource.getMessage("error.cannotEditBoard", null, getDefault()));
         }
     }

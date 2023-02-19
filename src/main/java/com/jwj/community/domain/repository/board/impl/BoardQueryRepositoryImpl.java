@@ -20,7 +20,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<Board> boards(BoardSearchCondition condition) {
+    public Page<Board> getBoards(BoardSearchCondition condition) {
         List<Board> boards = queryFactory
                 .selectFrom(board)
                 .offset(condition.getPageable().getOffset())

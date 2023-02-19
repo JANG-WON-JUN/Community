@@ -6,6 +6,6 @@ import org.springframework.data.domain.Page;
 
 public interface BoardQueryRepository {
 
-    Page<Board> boards(BoardSearchCondition condition);
+    Page<Board> getBoards(BoardSearchCondition condition);
 
 }
