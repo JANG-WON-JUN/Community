@@ -6,6 +6,8 @@ import com.jwj.community.domain.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static java.lang.Integer.MAX_VALUE;
+
 @Entity
 @Table(name = "BOARD_TB")
 @Getter
@@ -38,7 +40,8 @@ public class Board extends BaseEntity {
     private Member member;
 
     @Builder
-    public Board(String title, String content, boolean tempSave, BoardType boardType) {
+    public Board(Long id, String title, String content, boolean tempSave, BoardType boardType) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.tempSave = tempSave;
@@ -47,5 +50,15 @@ public class Board extends BaseEntity {
 
     public void setWriter(Member member){
         this.member = member;
+    }
+
+    public void edit(Board board){
+        this.title = board.getTitle();
+        this.content = board.getContent();
+        this.tempSave = board.isTempSave();
+    }
+
+    public int increaseViews(){
+        return views + 1 < MAX_VALUE ? ++views : MAX_VALUE;
     }
 }
