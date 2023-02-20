@@ -29,10 +29,10 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class JwtTokenFactory {
 
     @Value("${jwt.secretKey}")
-    private String SECRET_KEY;
+    String SECRET_KEY;
 
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    JwtTokenUtil jwtTokenUtil;
 
     private final String TEST_EMAIL = "admin@google.com";
     private final String TEST_PASSWORD = "1234";
