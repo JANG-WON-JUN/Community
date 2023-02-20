@@ -43,6 +43,7 @@ public class CommentService {
         }
         Comment savedComment = commentRepository.save(comment);
         savedComment.setWriter(memberService.findByEmail(email));
+        savedBoard.addComment(comment);
 
         return savedComment.getBoard().getId();
     }

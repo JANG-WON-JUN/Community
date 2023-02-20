@@ -6,6 +6,9 @@ import com.jwj.community.domain.enums.State;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static com.jwj.community.domain.enums.State.ACTIVE;
 import static com.jwj.community.domain.enums.State.DISABLE;
 import static java.lang.Integer.MAX_VALUE;
@@ -36,6 +39,9 @@ public class Board extends BaseEntity {
     @OneToOne
     @Setter
     private BoardType boardType;
+
+    @OneToMany(mappedBy = "board", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<Comment> comments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")
@@ -70,5 +76,12 @@ public class Board extends BaseEntity {
 
     public void activate(){
         state = ACTIVE;
+    }
+
+    public void addComment(Comment comment){
+        if(comments.size() > 0) {
+            comments.remove(comment);
+        }
+        comments.add(comment);
     }
 }
