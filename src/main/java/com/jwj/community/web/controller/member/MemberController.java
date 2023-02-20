@@ -29,7 +29,7 @@ public class MemberController {
             throw new BindException(bindingResult);
         }
 
-        memberService.createMember(memberCreate.toEntity(), memberCreate.getPassword().toEntity());
+        memberService.createMember(memberCreate.toEntity(), memberCreate.getPasswordEntity());
 
         return ResponseEntity.ok().body(null);
     }

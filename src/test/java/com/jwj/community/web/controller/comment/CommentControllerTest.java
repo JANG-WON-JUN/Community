@@ -9,9 +9,7 @@ import com.jwj.community.web.annotation.WithTestUser;
 import com.jwj.community.web.dto.board.request.BoardCreate;
 import com.jwj.community.web.dto.comment.request.CommentCreate;
 import com.jwj.community.web.dto.comment.request.CommentEdit;
-import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
-import com.jwj.community.web.dto.member.request.PasswordCreate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -60,22 +58,14 @@ class CommentControllerTest {
     @BeforeEach
     public void setup(){
         // 회원 등록
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password("1234")
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .name("어드민")
                 .nickname("어드민 닉네임")
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password("1234")
+                .year(2023)
+                .month(1)
+                .day(28)
                 .sex(MALE)
                 .build();
 
@@ -83,13 +73,15 @@ class CommentControllerTest {
                 .email(TEST_ANOTHER_EMAIL)
                 .name("회원")
                 .nickname("회원 닉네임")
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password("1234")
+                .year(2023)
+                .month(1)
+                .day(28)
                 .sex(MALE)
                 .build();
 
-        memberService.createMember(memberCreate.toEntity(), memberCreate.getPassword().toEntity());
-        memberService.createMember(anotherMemberCreate.toEntity(), anotherMemberCreate.getPassword().toEntity());
+        memberService.createMember(memberCreate.toEntity(), memberCreate.getPasswordEntity());
+        memberService.createMember(anotherMemberCreate.toEntity(), anotherMemberCreate.getPasswordEntity());
 
         // 게시글 등록
         BoardCreate boardCreate = BoardCreate.builder()

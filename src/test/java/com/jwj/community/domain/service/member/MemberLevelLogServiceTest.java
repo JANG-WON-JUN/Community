@@ -2,9 +2,7 @@ package com.jwj.community.domain.service.member;
 
 import com.jwj.community.domain.entity.member.MemberLevelLog;
 import com.jwj.community.web.annotation.ServiceTest;
-import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
-import com.jwj.community.web.dto.member.request.PasswordCreate;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,30 +23,21 @@ class MemberLevelLogServiceTest {
     MemberService memberService;
 
     private final String TEST_EMAIL = "admin@google.com";
-    private final String TEST_PASSWORD = "1234";
 
     @BeforeEach
     public void setup(){
         // 회원 등록
-        BirthDayCreate birthDay = BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-
-        PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .build();
-
         MemberCreate memberCreate = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .name("어드민")
-                .password(passwordCreate)
-                .birthDay(birthDay)
+                .password("1234")
+                .year(2023)
+                .month(1)
+                .day(28)
                 .sex(MALE)
                 .build();
 
-        memberService.createMember(memberCreate.toEntity(), memberCreate.getPassword().toEntity());
+        memberService.createMember(memberCreate.toEntity(), memberCreate.getPasswordEntity());
     }
 
     @Test
