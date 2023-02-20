@@ -17,16 +17,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RoleResourcesServiceTest {
 
     @Autowired
-    private RoleResourcesService roleResourcesService;
+    RoleResourcesService roleResourcesService;
 
     @Test
     @DisplayName("권한으로 자원 조회하기 - 익명사용자")
     void findByIdRoleRoleNameWithAnonymousTest() {
         // given
-        Roles role = ROLE_ANONYMOUS;
-
         // when
-        List<RoleResources> roleResources = roleResourcesService.findByRoleName(role);
+        List<RoleResources> roleResources = roleResourcesService.findByRoleName(ROLE_ANONYMOUS);
 
         // then
         assertThat(roleResources.size()).isEqualTo(0);
