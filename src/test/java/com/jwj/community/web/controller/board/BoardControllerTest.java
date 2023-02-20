@@ -115,7 +115,7 @@ class BoardControllerTest {
     @Test
     @DisplayName("글 등록하기 - 글 제목은 필수입력")
     @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
-    void titleRequiredTest() throws Exception{
+    void requiredTitleTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .content(TEST_CONTENT)
                 .tempSave(false)
@@ -174,7 +174,7 @@ class BoardControllerTest {
     @Test
     @DisplayName("글 등록하기 - 게시판 타입은 필수입력")
     @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
-    void boardTypeRequiredTest() throws Exception{
+    void requiredBoardTypeTest() throws Exception{
         BoardTypeCreate boardTypeCreate = BoardTypeCreate.builder()
                 .boardType(null)
                 .build();
@@ -247,7 +247,7 @@ class BoardControllerTest {
                 .tempSave(originalBoard.isTempSave())
                 .build();
 
-        mockMvc.perform(patch("/api/member/board/{id}", 1L)
+        mockMvc.perform(patch("/api/member/board")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(boardEdit)))
                 .andExpect(status().isOk())
@@ -256,9 +256,30 @@ class BoardControllerTest {
     }
 
     @Test
+    @DisplayName("글 수정하기 - 글 번호는 필수전달")
+    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
+    void requiredBoardIdTest() throws Exception{
+        Board originalBoard = boardService.getBoard(createBoard());
+        BoardEdit boardEdit = BoardEdit.builder()
+                .title(originalBoard.getTitle())
+                .content(originalBoard.getContent())
+                .tempSave(originalBoard.isTempSave())
+                .build();
+
+        mockMvc.perform(patch("/api/member/board")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(boardEdit)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("errorCode").value("400"))
+                .andExpect(jsonPath("fieldErrors[0].field").value("id"))
+                .andExpect(jsonPath("fieldErrors[0].errorMessage").value(messageSource.getMessage("field.required.boardId", null, getDefault())))
+                .andDo(print());
+    }
+
+    @Test
     @DisplayName("글 수정하기 - 글 제목은 필수입력")
     @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
-    void editBoardRequiredTitleTest() throws Exception{
+    void requiredTitleForEditBoardTest() throws Exception{
         Board originalBoard = boardService.getBoard(createBoard());
         BoardEdit boardEdit = BoardEdit.builder()
                 .id(originalBoard.getId())
@@ -266,7 +287,7 @@ class BoardControllerTest {
                 .tempSave(originalBoard.isTempSave())
                 .build();
 
-        mockMvc.perform(patch("/api/member/board/{id}", 1L)
+        mockMvc.perform(patch("/api/member/board")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(boardEdit)))
                 .andExpect(status().isBadRequest())
@@ -288,7 +309,7 @@ class BoardControllerTest {
                 .tempSave(originalBoard.isTempSave())
                 .build();
 
-        mockMvc.perform(patch("/api/member/board/{id}", 1L)
+        mockMvc.perform(patch("/api/member/board")
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(boardEdit)))
                 .andExpect(status().isBadRequest())
