@@ -7,7 +7,6 @@ import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.annotation.ControllerTest;
 import com.jwj.community.web.annotation.WithTestUser;
 import com.jwj.community.web.dto.board.request.BoardCreate;
-import com.jwj.community.web.dto.board.request.BoardTypeCreate;
 import com.jwj.community.web.dto.comment.request.CommentCreate;
 import com.jwj.community.web.dto.comment.request.CommentEdit;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
@@ -54,9 +53,6 @@ class CommentControllerTest {
 
     private final String TEST_EMAIL = "admin@google.com";
     private final String TEST_ANOTHER_EMAIL = "member@google.com";
-    private final String TEST_PASSWORD = "1234";
-    private final String TEST_TITLE = "글 제목";
-    private final String TEST_CONTENT = "글 내용";
     private final String TEST_COMMENT = "댓글 내용";
 
     private Long savedBoardId;
@@ -71,7 +67,7 @@ class CommentControllerTest {
                 .build();
 
         PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
+                .password("1234")
                 .build();
 
         MemberCreate memberCreate = MemberCreate.builder()
@@ -96,15 +92,11 @@ class CommentControllerTest {
         memberService.createMember(anotherMemberCreate.toEntity(), anotherMemberCreate.getPassword().toEntity());
 
         // 게시글 등록
-        BoardTypeCreate boardType = BoardTypeCreate.builder()
-                .boardType(DAILY)
-                .build();
-
         BoardCreate boardCreate = BoardCreate.builder()
-                .title(TEST_TITLE)
-                .content(TEST_CONTENT)
+                .title("글 제목")
+                .content("글 내용")
                 .tempSave(false)
-                .boardType(boardType)
+                .boardType(DAILY)
                 .build();
 
         savedBoardId = boardService.createBoard(boardCreate.toEntity(), TEST_EMAIL);

@@ -7,7 +7,6 @@ import com.jwj.community.web.annotation.ServiceTest;
 import com.jwj.community.web.common.paging.request.BoardSearchCondition;
 import com.jwj.community.web.dto.board.request.BoardCreate;
 import com.jwj.community.web.dto.board.request.BoardEdit;
-import com.jwj.community.web.dto.board.request.BoardTypeCreate;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.dto.member.request.PasswordCreate;
@@ -41,7 +40,6 @@ class BoardServiceTest {
 
     private final String TEST_EMAIL = "admin@google.com";
     private final String TEST_ANOTHER_EMAIL = "member@google.com";
-    private final String TEST_PASSWORD = "1234";
     private final String TEST_TITLE = "글 제목";
     private final String TEST_CONTENT = "글 내용";
 
@@ -55,7 +53,7 @@ class BoardServiceTest {
                 .build();
 
         PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
+                .password("1234")
                 .build();
 
         MemberCreate memberCreate = MemberCreate.builder()
@@ -84,15 +82,11 @@ class BoardServiceTest {
     @DisplayName("게시판 저장 성공")
     void saveBoardTest() {
         // given
-        BoardTypeCreate boardType = BoardTypeCreate.builder()
-                .boardType(DAILY)
-                .build();
-
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
                 .content(TEST_CONTENT)
                 .tempSave(false)
-                .boardType(boardType)
+                .boardType(DAILY)
                 .build();
 
         // when
@@ -194,15 +188,11 @@ class BoardServiceTest {
     }
     
     private Long createBoard(){
-        BoardTypeCreate boardType = BoardTypeCreate.builder()
-                .boardType(DAILY)
-                .build();
-
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
                 .content(TEST_CONTENT)
                 .tempSave(false)
-                .boardType(boardType)
+                .boardType(DAILY)
                 .build();
 
         return boardService.createBoard(boardCreate.toEntity(), TEST_EMAIL);
