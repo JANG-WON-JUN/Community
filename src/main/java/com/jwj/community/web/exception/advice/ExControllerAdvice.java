@@ -22,8 +22,11 @@ public class ExControllerAdvice {
 
     @ResponseBody // ExceptionHandler에서 json으로 넘길 때!
     @ExceptionHandler
+    @SuppressWarnings("ConstantConditions") // @Nullable 제약조건을 suppress할 때 ConstantConditions를 사용한다.
     public ResponseEntity<ErrorResult> invalidRequestHandler(BindException e){
-        String errorMessage = messageSource.getMessage("error.badRequest", null, getDefault());
+        String errorMessage = e.hasGlobalErrors() ?
+                e.getBindingResult().getGlobalError().getDefaultMessage()
+                :messageSource.getMessage("error.badRequest", null, getDefault());
 
         ErrorResult errorResult = ErrorResult.builder()
                 .errorCode(BAD_REQUEST)

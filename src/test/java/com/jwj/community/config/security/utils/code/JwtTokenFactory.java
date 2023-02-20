@@ -6,9 +6,7 @@ import com.jwj.community.domain.entity.member.auth.MemberRoles;
 import com.jwj.community.domain.entity.member.auth.Role;
 import com.jwj.community.domain.enums.Roles;
 import com.jwj.community.web.dto.member.jwt.JwtToken;
-import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
-import com.jwj.community.web.dto.member.request.PasswordCreate;
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +62,10 @@ public class JwtTokenFactory {
                 .email(TEST_EMAIL)
                 .name("어드민")
                 .nickname("어드민 닉네임")
-                .password(password())
-                .birthDay(birthDay())
+                .password(TEST_PASSWORD)
+                .year(2023)
+                .month(1)
+                .day(28)
                 .build()
                 .toEntity();
 
@@ -79,8 +79,10 @@ public class JwtTokenFactory {
         Member member = MemberCreate.builder()
                 .name("어드민")
                 .nickname("어드민 닉네임")
-                .password(password())
-                .birthDay(birthDay())
+                .password(TEST_PASSWORD)
+                .year(2023)
+                .month(1)
+                .day(28)
                 .build()
                 .toEntity();
 
@@ -91,8 +93,10 @@ public class JwtTokenFactory {
         Member member = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname("어드민 닉네임")
-                .password(password())
-                .birthDay(birthDay())
+                .password(TEST_PASSWORD)
+                .year(2023)
+                .month(1)
+                .day(28)
                 .build()
                 .toEntity();
 
@@ -103,8 +107,10 @@ public class JwtTokenFactory {
         Member member = MemberCreate.builder()
                 .email(TEST_EMAIL)
                 .nickname("어드민 닉네임")
-                .password(password())
-                .birthDay(birthDay())
+                .password(TEST_PASSWORD)
+                .year(2023)
+                .month(1)
+                .day(28)
                 .build()
                 .toEntity();
 
@@ -127,30 +133,8 @@ public class JwtTokenFactory {
                 .build();
     }
 
-    public JwtToken getNoMemberJwtToken(){
-        return jwtTokenUtil.generateToken(null);
-    }
-
     private String encodedSecretKey(String secretKey){
         return BASE64.encode(SECRET_KEY.getBytes());
-    }
-
-    private BirthDayCreate birthDay(){
-        return BirthDayCreate.builder()
-                .year(2023)
-                .month(1)
-                .day(28)
-                .build();
-    }
-
-    private PasswordCreate password(){
-        return PasswordCreate.builder()
-                .password(TEST_PASSWORD)
-                .build();
-    }
-
-    private void addAnonymousRole(Member member){
-        addRole(member, ROLE_ANONYMOUS);
     }
 
     private void addMemberRole(Member member){
