@@ -22,10 +22,10 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class JwtTokenUtilTest {
 
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
+    JwtTokenUtil jwtTokenUtil;
 
     @Autowired
-    private JwtTokenFactory jwtTokenFactory;
+    JwtTokenFactory jwtTokenFactory;
 
     @Test
     @DisplayName("회원정보가 유효할 때 access 토큰얻기")
