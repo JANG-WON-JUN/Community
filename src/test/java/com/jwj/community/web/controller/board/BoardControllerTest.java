@@ -47,7 +47,7 @@ class BoardControllerTest {
     MemberService memberService;
 
     @Autowired
-    private BoardService boardService;
+    BoardService boardService;
 
     @Autowired
     MessageSource messageSource;
