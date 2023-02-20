@@ -7,11 +7,9 @@ import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.annotation.ControllerTest;
 import com.jwj.community.web.annotation.WithTestUser;
 import com.jwj.community.web.dto.board.request.BoardCreate;
-import com.jwj.community.web.dto.board.request.BoardRetrieve;
 import com.jwj.community.web.dto.board.request.BoardTypeCreate;
 import com.jwj.community.web.dto.comment.request.CommentCreate;
 import com.jwj.community.web.dto.comment.request.CommentEdit;
-import com.jwj.community.web.dto.comment.request.parentComment;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.dto.member.request.PasswordCreate;
@@ -118,7 +116,7 @@ class CommentControllerTest {
     void createWithAllInfoTest() throws Exception{
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         mockMvc.perform(post("/api/member/comment")
@@ -135,13 +133,13 @@ class CommentControllerTest {
     void createNestedCommentWithAllInfoTest() throws Exception{
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentCreate nestedCommentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .parent(validParentComment())
-                .board(validBoardRetrieve())
+                .parentId(1L)
+                .boardId(savedBoardId)
                 .build();
 
         commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
@@ -159,7 +157,7 @@ class CommentControllerTest {
     @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredCommentTest() throws Exception{
         CommentCreate commentCreate = CommentCreate.builder()
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         mockMvc.perform(post("/api/member/comment")
@@ -177,13 +175,8 @@ class CommentControllerTest {
     @DisplayName("댓글 등록하기 - 게시글 번호는 필수전달")
     @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredBoardIdTest() throws Exception{
-        BoardRetrieve boardRetrieve = BoardRetrieve.builder()
-                .boardId(null)
-                .build();
-
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(boardRetrieve)
                 .build();
 
         mockMvc.perform(post("/api/member/comment")
@@ -192,7 +185,7 @@ class CommentControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errorCode").value("400"))
                 .andExpect(jsonPath("errorMessage").value(messageSource.getMessage("error.badRequest", null, getDefault())))
-                .andExpect(jsonPath("fieldErrors[0].field").value("board.boardId"))
+                .andExpect(jsonPath("fieldErrors[0].field").value("boardId"))
                 .andExpect(jsonPath("fieldErrors[0].errorMessage").value(messageSource.getMessage("field.required.board", null, getDefault())))
                 .andDo(print());
     }
@@ -204,7 +197,7 @@ class CommentControllerTest {
         String editedComment = "수정된 댓글 내용";
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentEdit commentEdit = CommentEdit.builder()
@@ -229,7 +222,7 @@ class CommentControllerTest {
         String editedComment = "수정된 댓글 내용";
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentEdit commentEdit = CommentEdit.builder()
@@ -256,7 +249,7 @@ class CommentControllerTest {
         String editedComment = "수정된 댓글 내용";
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentEdit commentEdit = CommentEdit.builder()
@@ -273,17 +266,5 @@ class CommentControllerTest {
                 .andExpect(jsonPath("errorCode").value("400"))
                 .andExpect(jsonPath("errorMessage").value(messageSource.getMessage("error.cannotEditComment", null, getDefault())))
                 .andDo(print());
-    }
-
-    private BoardRetrieve validBoardRetrieve(){
-        return BoardRetrieve.builder()
-                .boardId(savedBoardId)
-                .build();
-    }
-
-    private parentComment validParentComment(){
-        return parentComment.builder()
-                .parentId(1L)
-                .build();
     }
 }

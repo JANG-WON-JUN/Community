@@ -1,8 +1,7 @@
 package com.jwj.community.web.dto.comment.request;
 
+import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.entity.board.Comment;
-import com.jwj.community.web.dto.board.request.BoardRetrieve;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -16,24 +15,31 @@ public class CommentCreate {
     @NotBlank(message = "{field.required.comment}")
     private String comment;
 
-    private parentComment parent;
+    private Long parentId;
 
-    @Valid
     @NotNull(message = "{field.required.board}")
-    private BoardRetrieve board;
+    private Long boardId;
 
     @Builder
-    public CommentCreate(String comment, parentComment parent, BoardRetrieve board) {
+    public CommentCreate(String comment, Long parentId, Long boardId) {
         this.comment = comment;
-        this.parent = parent;
-        this.board = board;
+        this.parentId = parentId;
+        this.boardId = boardId;
     }
 
     public Comment toEntity(){
         return Comment.builder()
                 .comment(comment)
-                .parent(parent == null ? null : parent.toEntity())
-                .board(board.toEntity())
+                .parent(toParentComment())
+                .board(toBoard())
                 .build();
+    }
+
+    private Comment toParentComment(){
+        return parentId == null ? null : Comment.builder().id(parentId).build();
+    }
+
+    private Board toBoard(){
+        return Board.builder().id(boardId).build();
     }
 }

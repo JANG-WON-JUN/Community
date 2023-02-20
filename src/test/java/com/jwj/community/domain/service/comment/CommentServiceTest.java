@@ -5,11 +5,9 @@ import com.jwj.community.domain.service.board.BoardService;
 import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.annotation.ServiceTest;
 import com.jwj.community.web.dto.board.request.BoardCreate;
-import com.jwj.community.web.dto.board.request.BoardRetrieve;
 import com.jwj.community.web.dto.board.request.BoardTypeCreate;
 import com.jwj.community.web.dto.comment.request.CommentCreate;
 import com.jwj.community.web.dto.comment.request.CommentEdit;
-import com.jwj.community.web.dto.comment.request.parentComment;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.dto.member.request.PasswordCreate;
@@ -40,16 +38,13 @@ class CommentServiceTest {
     MemberService memberService;
 
     @Autowired
-    private BoardService boardService;
+    BoardService boardService;
 
     @Autowired
     MessageSource messageSource;
 
     private final String TEST_EMAIL = "admin@google.com";
     private final String TEST_ANOTHER_EMAIL = "member@google.com";
-    private final String TEST_PASSWORD = "1234";
-    private final String TEST_TITLE = "글 제목";
-    private final String TEST_CONTENT = "글 내용";
     private final String TEST_COMMENT = "댓글 내용";
 
     private Long savedBoardId;
@@ -64,7 +59,7 @@ class CommentServiceTest {
                 .build();
 
         PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
+                .password("1234")
                 .build();
 
         MemberCreate memberCreate = MemberCreate.builder()
@@ -94,8 +89,8 @@ class CommentServiceTest {
                 .build();
 
         BoardCreate boardCreate = BoardCreate.builder()
-                .title(TEST_TITLE)
-                .content(TEST_CONTENT)
+                .title("글 제목")
+                .content("글 내용")
                 .tempSave(false)
                 .boardType(boardType)
                 .build();
@@ -109,7 +104,7 @@ class CommentServiceTest {
         // given
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         // when
@@ -133,7 +128,7 @@ class CommentServiceTest {
         // given
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         // when
@@ -156,13 +151,13 @@ class CommentServiceTest {
     void nestCommentCreateTest1() {
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentCreate nestedCommentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .parent(validParentComment())
-                .board(validBoardRetrieve())
+                .parentId(1L)
+                .boardId(savedBoardId)
                 .build();
 
         commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
@@ -195,19 +190,19 @@ class CommentServiceTest {
     void nestCommentCreateTest2() {
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentCreate nestedCommentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .parent(validParentComment())
-                .board(validBoardRetrieve())
+                .parentId(1L)
+                .boardId(savedBoardId)
                 .build();
 
         CommentCreate nestedCommentCreate2 = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .parent(validParentComment())
-                .board(validBoardRetrieve())
+                .parentId(1L)
+                .boardId(savedBoardId)
                 .build();
 
         commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
@@ -248,18 +243,18 @@ class CommentServiceTest {
     void nestCommentCreateTest3() {
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentCreate commentCreate2 = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentCreate nestedCommentCreate2 = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .parent(validParentComment())
-                .board(validBoardRetrieve())
+                .parentId(1L)
+                .boardId(savedBoardId)
                 .build();
 
         commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
@@ -299,13 +294,9 @@ class CommentServiceTest {
     @DisplayName("게시글이 존재하지 않으면 예외발생")
     void boardNotFoundTest() {
         // given
-        BoardRetrieve boardRetrieve = BoardRetrieve.builder()
-                .boardId(MAX_VALUE)
-                .build();
-
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(boardRetrieve)
+                .boardId(MAX_VALUE)
                 .build();
 
         // expected
@@ -321,7 +312,7 @@ class CommentServiceTest {
         String editedComment = "수정된 댓글 내용";
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentEdit commentEdit = CommentEdit.builder()
@@ -354,7 +345,7 @@ class CommentServiceTest {
         String editedComment = "수정된 댓글 내용";
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
-                .board(validBoardRetrieve())
+                .boardId(savedBoardId)
                 .build();
 
         CommentEdit commentEdit = CommentEdit.builder()
@@ -368,17 +359,5 @@ class CommentServiceTest {
         assertThatThrownBy(() -> commentService.editComment(commentEdit.toEntity(), TEST_ANOTHER_EMAIL))
                 .isInstanceOf(CannotEditBoard.class)
                 .hasMessage(messageSource.getMessage("error.cannotEditComment", null, getDefault()));
-    }
-
-    private BoardRetrieve validBoardRetrieve(){
-        return BoardRetrieve.builder()
-                .boardId(savedBoardId)
-                .build();
-    }
-
-    private parentComment validParentComment(){
-        return parentComment.builder()
-                .parentId(1L)
-                .build();
     }
 }
