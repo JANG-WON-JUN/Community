@@ -2,6 +2,7 @@ package com.jwj.community.web.dto.comment.request;
 
 import com.jwj.community.domain.entity.board.Comment;
 import com.jwj.community.web.dto.board.request.BoardRetrieve;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -17,7 +18,8 @@ public class CommentCreate {
 
     private parentComment parent;
 
-    @NotNull(message = "{field.required.comment.noBoard}")
+    @Valid
+    @NotNull(message = "{field.required.board}")
     private BoardRetrieve board;
 
     @Builder

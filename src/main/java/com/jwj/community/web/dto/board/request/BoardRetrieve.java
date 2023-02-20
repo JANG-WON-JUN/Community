@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BoardRetrieve {
 
+    @NotNull(message = "{field.required.board}")
     private Long boardId;
 
     @Builder

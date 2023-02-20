@@ -2,6 +2,7 @@ package com.jwj.community.web.dto.comment.request;
 
 import com.jwj.community.domain.entity.board.Comment;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentEdit {
 
+    @NotNull(message = "{field.required.commentId}")
     private Long id;
 
     @NotBlank(message = "{field.required.comment}")
