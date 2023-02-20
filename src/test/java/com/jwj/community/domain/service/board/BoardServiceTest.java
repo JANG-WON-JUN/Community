@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 class BoardServiceTest {
 
     @Autowired
-    private BoardService boardService;
+    BoardService boardService;
 
     @Autowired
     MemberService memberService;
@@ -144,7 +144,7 @@ class BoardServiceTest {
         Long invalidBoardId = 0L;
 
         // expected
-        assertThatThrownBy(() -> { boardService.getBoard(invalidBoardId); })
+        assertThatThrownBy(() -> boardService.getBoard(invalidBoardId))
                 .isInstanceOf(Exception.class)
                 .hasMessage(messageSource.getMessage("error.noBoard", null, getDefault()));
     }
@@ -188,9 +188,7 @@ class BoardServiceTest {
                 .build();
 
         // expected
-        assertThatThrownBy(() -> {
-            boardService.editBoard(boardEdit.toEntity(), TEST_ANOTHER_EMAIL);
-        })
+        assertThatThrownBy(() ->boardService.editBoard(boardEdit.toEntity(), TEST_ANOTHER_EMAIL))
                 .isInstanceOf(CannotEditBoard.class)
                 .hasMessage(messageSource.getMessage("error.cannotEditBoard", null, getDefault()));
     }
