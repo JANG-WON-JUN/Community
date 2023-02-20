@@ -9,7 +9,6 @@ import com.jwj.community.web.annotation.WithTestUser;
 import com.jwj.community.web.common.paging.request.BoardSearchCondition;
 import com.jwj.community.web.dto.board.request.BoardCreate;
 import com.jwj.community.web.dto.board.request.BoardEdit;
-import com.jwj.community.web.dto.board.request.BoardTypeCreate;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.dto.member.request.PasswordCreate;
@@ -54,7 +53,6 @@ class BoardControllerTest {
 
     private final String TEST_EMAIL = "admin@google.com";
     private final String TEST_ANOTHER_EMAIL = "member@google.com";
-    private final String TEST_PASSWORD = "1234";
     private final String TEST_TITLE = "글 제목";
     private final String TEST_CONTENT = "글 내용";
 
@@ -68,7 +66,7 @@ class BoardControllerTest {
                 .build();
 
         PasswordCreate passwordCreate = PasswordCreate.builder()
-                .password(TEST_PASSWORD)
+                .password("1234")
                 .build();
 
         MemberCreate memberCreate = MemberCreate.builder()
@@ -101,7 +99,7 @@ class BoardControllerTest {
                 .title(TEST_TITLE)
                 .content(TEST_CONTENT)
                 .tempSave(false)
-                .boardType(validBoardTypeCreate())
+                .boardType(DAILY)
                 .build();
 
         mockMvc.perform(post("/api/member/board")
@@ -119,7 +117,7 @@ class BoardControllerTest {
         BoardCreate boardCreate = BoardCreate.builder()
                 .content(TEST_CONTENT)
                 .tempSave(false)
-                .boardType(validBoardTypeCreate())
+                .boardType(DAILY)
                 .build();
 
         mockMvc.perform(post("/api/member/board")
@@ -141,7 +139,7 @@ class BoardControllerTest {
                 .title(TEST_TITLE)
                 .content("")
                 .tempSave(false)
-                .boardType(validBoardTypeCreate())
+                .boardType(DAILY)
                 .build();
 
         mockMvc.perform(post("/api/member/board")
@@ -160,7 +158,7 @@ class BoardControllerTest {
                 .title(TEST_TITLE)
                 .content(null)
                 .tempSave(false)
-                .boardType(validBoardTypeCreate())
+                .boardType(DAILY)
                 .build();
 
         mockMvc.perform(post("/api/member/board")
@@ -175,15 +173,11 @@ class BoardControllerTest {
     @DisplayName("글 등록하기 - 게시판 타입은 필수입력")
     @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredBoardTypeTest() throws Exception{
-        BoardTypeCreate boardTypeCreate = BoardTypeCreate.builder()
-                .boardType(null)
-                .build();
-
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
                 .content(null)
                 .tempSave(false)
-                .boardType(boardTypeCreate)
+                .boardType(null)
                 .build();
 
         mockMvc.perform(post("/api/member/board")
@@ -192,7 +186,7 @@ class BoardControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("errorCode").value("400"))
                 .andExpect(jsonPath("errorMessage").value(messageSource.getMessage("error.badRequest", null, getDefault())))
-                .andExpect(jsonPath("fieldErrors[0].field").value("boardType.boardType"))
+                .andExpect(jsonPath("fieldErrors[0].field").value("boardType"))
                 .andExpect(jsonPath("fieldErrors[0].errorMessage").value(messageSource.getMessage("field.required.boardType", null, getDefault())))
                 .andDo(print());
     }
@@ -318,22 +312,12 @@ class BoardControllerTest {
                 .andDo(print());
     }
 
-    private BoardTypeCreate validBoardTypeCreate(){
-        return BoardTypeCreate.builder()
-                .boardType(DAILY)
-                .build();
-    }
-
     private Long createBoard(){
-        BoardTypeCreate boardType = BoardTypeCreate.builder()
-                .boardType(DAILY)
-                .build();
-
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
                 .content(TEST_CONTENT)
                 .tempSave(false)
-                .boardType(boardType)
+                .boardType(DAILY)
                 .build();
 
         return boardService.createBoard(boardCreate.toEntity(), TEST_EMAIL);

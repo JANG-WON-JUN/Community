@@ -5,7 +5,6 @@ import com.jwj.community.domain.service.board.BoardService;
 import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.annotation.ServiceTest;
 import com.jwj.community.web.dto.board.request.BoardCreate;
-import com.jwj.community.web.dto.board.request.BoardTypeCreate;
 import com.jwj.community.web.dto.comment.request.CommentCreate;
 import com.jwj.community.web.dto.comment.request.CommentEdit;
 import com.jwj.community.web.dto.member.request.BirthDayCreate;
@@ -84,15 +83,11 @@ class CommentServiceTest {
         memberService.createMember(anotherMemberCreate.toEntity(), anotherMemberCreate.getPassword().toEntity());
 
         // 게시글 등록
-        BoardTypeCreate boardType = BoardTypeCreate.builder()
-                .boardType(DAILY)
-                .build();
-
         BoardCreate boardCreate = BoardCreate.builder()
                 .title("글 제목")
                 .content("글 내용")
                 .tempSave(false)
-                .boardType(boardType)
+                .boardType(DAILY)
                 .build();
 
         savedBoardId = boardService.createBoard(boardCreate.toEntity(), TEST_EMAIL);
