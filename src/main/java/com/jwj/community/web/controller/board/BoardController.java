@@ -55,7 +55,8 @@ public class BoardController {
     }
 
     @PostMapping("/api/member/board")
-    public ResponseEntity<Result<Long>> createBoard(@Valid @RequestBody BoardCreate boardCreate, @LoginMember LoggedInMember loggedInMember){
+    public ResponseEntity<Result<Long>> createBoard(@Valid @RequestBody BoardCreate boardCreate,
+                                                    @LoginMember LoggedInMember loggedInMember){
         Result<Long> result = Result.<Long>builder()
                 .data(boardService.createBoard(boardCreate.toEntity(), loggedInMember.getEmail()))
                 .build();
@@ -63,9 +64,9 @@ public class BoardController {
         return ok(result);
     }
 
-    @PatchMapping("/api/member/board/{id}")
-    public ResponseEntity<Result<Long>> editBoard(@Valid @RequestBody BoardEdit boardEdit, @LoginMember LoggedInMember loggedInMember){
-        // 임시저장한 글을 불러오기
+    @PatchMapping("/api/member/board")
+    public ResponseEntity<Result<Long>> editBoard(@Valid @RequestBody BoardEdit boardEdit,
+                                                  @LoginMember LoggedInMember loggedInMember){
         Result<Long> result = Result.<Long>builder()
                 .data(boardService.editBoard(boardEdit.toEntity(),  loggedInMember.getEmail()))
                 .build();
@@ -74,7 +75,7 @@ public class BoardController {
     }
 
     @DeleteMapping("/api/member/board/{id}")
-    public void delete(){
-        // 임시저장한 글을 불러오기
+    public void deleteBoard(@PathVariable Long id, @LoginMember LoggedInMember loggedInMember){
+        boardService.deleteBoard(id, loggedInMember.getEmail());
     }
 }
