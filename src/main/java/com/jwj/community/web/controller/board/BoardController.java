@@ -8,7 +8,8 @@ import com.jwj.community.web.common.result.ListResult;
 import com.jwj.community.web.common.result.Result;
 import com.jwj.community.web.dto.board.request.BoardCreate;
 import com.jwj.community.web.dto.board.request.BoardEdit;
-import com.jwj.community.web.dto.board.response.BoardResponse;
+import com.jwj.community.web.dto.board.response.BoardView;
+import com.jwj.community.web.dto.board.response.SimpleBoardView;
 import com.jwj.community.web.dto.member.login.LoggedInMember;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +29,14 @@ public class BoardController {
     private final BoardService boardService;
 
     @GetMapping("/api/board")
-    public ResponseEntity<ListResult<BoardResponse>> getBoards(@RequestBody BoardSearchCondition condition){
+    public ResponseEntity<ListResult<SimpleBoardView>> getBoards(@RequestBody BoardSearchCondition condition){
         Page<Board> boardPage = boardService.getBoards(condition);
 
-        List<BoardResponse> boards = boardPage.stream()
-                .map(board -> BoardResponse.builder().board(board).build())
+        List<SimpleBoardView> boards = boardPage.stream()
+                .map(board -> SimpleBoardView.builder().board(board).build())
                 .collect(toList());
 
-        ListResult<BoardResponse> resultList = ListResult.<BoardResponse>builder()
+        ListResult<SimpleBoardView> resultList = ListResult.<SimpleBoardView>builder()
                 .list(boards)
                 .page(boardPage)
                 .build();
@@ -44,11 +45,11 @@ public class BoardController {
     }
 
     @GetMapping("/api/board/{id}")
-    public ResponseEntity<Result<BoardResponse>> getBoard(@PathVariable Long id){
+    public ResponseEntity<Result<BoardView>> getBoard(@PathVariable Long id){
         Board savedBoard = boardService.getBoard(id);
 
-        Result<BoardResponse> result = Result.<BoardResponse>builder()
-                .data(BoardResponse.builder().board(savedBoard).build())
+        Result<BoardView> result = Result.<BoardView>builder()
+                .data(BoardView.builder().board(savedBoard).build())
                 .build();
 
         return ok(result);
