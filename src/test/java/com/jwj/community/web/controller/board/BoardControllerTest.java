@@ -202,6 +202,28 @@ class BoardControllerTest {
                 .content(mapper.writeValueAsString(BoardSearchCondition.builder().build())))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("size").value(7))
+                .andExpect(jsonPath("list[0].id").value(7))
+                .andExpect(jsonPath("list[1].id").value(6))
+                .andExpect(jsonPath("list[2].id").value(5))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 리스트 조회하기 - 조회순 정렬조건 추가")
+    void boardListWithViewsOrderTest() throws Exception{
+        IntStream.rangeClosed(1, 7).forEach(i -> createBoard(TEST_EMAIL));
+
+        Map<String, String> condition = new HashMap<>();
+        condition.put("searchOrder", "v");
+
+        mockMvc.perform(get("/api/board")
+                .contentType(APPLICATION_JSON_VALUE)
+                .content(mapper.writeValueAsString(condition)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("size").value(7))
+                .andExpect(jsonPath("list[0].id").value(7))
+                .andExpect(jsonPath("list[1].id").value(6))
+                .andExpect(jsonPath("list[2].id").value(5))
                 .andDo(print());
     }
 
