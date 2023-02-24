@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 @Slf4j
@@ -43,8 +44,8 @@ public class MemberController {
         memberService.findByEmail(email);
 
         Result<Boolean> result = Result.<Boolean>builder()
-            .data(TRUE)
-            .build();
+                .data(memberService.findByEmail(email) == null ? TRUE : FALSE)
+                .build();
 
         return ResponseEntity.ok().body(result);
     }
@@ -54,8 +55,8 @@ public class MemberController {
         memberService.findByNickname(nickname);
 
         Result<Boolean> result = Result.<Boolean>builder()
-            .data(TRUE)
-            .build();
+                .data(memberService.findByNickname(nickname) == null ? TRUE : FALSE)
+                .build();
 
         return ResponseEntity.ok().body(result);
     }
