@@ -70,7 +70,8 @@ public class MemberCreateValidator implements Validator {
 
     private boolean isValidBirthday(MemberCreate memberCreate, Errors errors) {
         if(!isValidDate(memberCreate.getYear(), memberCreate.getMonth(), memberCreate.getDay())){
-            errors.reject("confirm.birthDay", messageSource.getMessage("confirm.birthDay", null, getDefault()));
+            errors.rejectValue("day", "confirm.birthDay",
+                    messageSource.getMessage("confirm.birthDay", null, getDefault()));
             return false;
         }
         return true;
