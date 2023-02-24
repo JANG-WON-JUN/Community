@@ -5,7 +5,6 @@ import com.jwj.community.web.dto.member.request.MemberCreate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
 import org.springframework.lang.NonNull;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -37,27 +36,23 @@ public class MemberCreateValidator implements Validator {
     }
 
     private boolean isDuplicateEmail(MemberCreate memberCreate, Errors errors) {
-        try {
-            memberService.findByEmail(memberCreate.getEmail());
+        if(memberService.findByEmail(memberCreate.getEmail()) != null) {
             errors.rejectValue("email", "",
-                    messageSource.getMessage("duplicate.email", null, getDefault()));
-
+                        messageSource.getMessage("duplicate.email", null, getDefault()));
             return true;
-        }catch (UsernameNotFoundException e){
-            return false;
         }
+
+        return false;
     }
 
     private boolean isDuplicateNickname(MemberCreate memberCreate, Errors errors) {
-        try {
-            memberService.findByNickname(memberCreate.getNickname());
+        if(memberService.findByNickname(memberCreate.getNickname()) != null) {
             errors.rejectValue("nickname", "",
                     messageSource.getMessage("duplicate.nickname", null, getDefault()));
-
             return true;
-        }catch (UsernameNotFoundException e){
-            return false;
         }
+
+        return false;
     }
 
     private boolean isMatchedPassword(MemberCreate memberCreate, Errors errors) {
