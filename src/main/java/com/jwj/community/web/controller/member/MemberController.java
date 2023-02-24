@@ -12,7 +12,6 @@ import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static java.lang.Boolean.FALSE;
@@ -40,7 +39,7 @@ public class MemberController {
     }
 
     @PostMapping("/api/join/emailCheck")
-    public ResponseEntity<Result<Boolean>> isEmailDuplicate(@RequestParam String email) {
+    public ResponseEntity<Result<Boolean>> isEmailDuplicate(@RequestBody String email) {
         memberService.findByEmail(email);
 
         Result<Boolean> result = Result.<Boolean>builder()
@@ -51,7 +50,7 @@ public class MemberController {
     }
 
     @PostMapping("/api/join/nicknameCheck")
-    public ResponseEntity<Result<Boolean>> isNicknameDuplicate(@RequestParam String nickname) {
+    public ResponseEntity<Result<Boolean>> isNicknameDuplicate(@RequestBody String nickname) {
         memberService.findByNickname(nickname);
 
         Result<Boolean> result = Result.<Boolean>builder()
