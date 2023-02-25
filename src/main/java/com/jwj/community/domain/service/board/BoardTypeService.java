@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -20,5 +22,9 @@ public class BoardTypeService {
 
     public BoardType findByBoardType(BoardTypes boardType){
         return boardTypeRepository.findByBoardType(boardType);
+    }
+
+    public List<BoardType> getBoardTypes(){
+        return boardTypeRepository.findAll();
     }
 }

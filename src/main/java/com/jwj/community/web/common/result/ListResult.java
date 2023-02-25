@@ -18,9 +18,9 @@ public class ListResult<T> {
     private final PageInfo pageInfo;
 
     @Builder
-    public ListResult(List<T> list, Page page) {
+    public ListResult(List<T> list, Page<?> page) {
         this.list = list;
         this.size = list.size();
-        this.pageInfo = of(page);
+        this.pageInfo = page == null ? null : of(page);
     }
 }

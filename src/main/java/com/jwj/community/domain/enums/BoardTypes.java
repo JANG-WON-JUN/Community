@@ -9,5 +9,5 @@ public enum BoardTypes {
     DAILY("일상 게시판"),
     DEV("개발 게시판");
 
-    private String description;
+    private String descriptdion;
 }
