@@ -41,7 +41,10 @@ public class JwtAuthenticationSuccessHandler implements AuthenticationSuccessHan
                 .build();
 
         addLevelPoint(member);
-        saveRefreshToken(jwtToken, member.getEmail());
+
+        if(member.getRefreshToken() == null){
+            saveRefreshToken(jwtToken, member.getEmail());
+        }
 
         response.setStatus(OK.value());
         response.setContentType(APPLICATION_JSON_VALUE);
