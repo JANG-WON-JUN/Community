@@ -1,4 +1,4 @@
-package com.jwj.community.web.converter.enumconverter;
+package com.jwj.community.web.converter.enumconverter.converters;
 
 import com.jwj.community.domain.enums.BoardTypes;
 import org.springframework.core.convert.converter.Converter;
