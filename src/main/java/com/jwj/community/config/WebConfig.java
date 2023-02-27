@@ -1,7 +1,9 @@
 package com.jwj.community.config;
 
 import com.jwj.community.web.argumentresolver.LoginMemberArgumentResolver;
-import com.jwj.community.web.converter.enumconverter.BoardTypesConverter;
+import com.jwj.community.web.converter.enumconverter.converters.BoardSearchTypeConverter;
+import com.jwj.community.web.converter.enumconverter.converters.BoardTypesConverter;
+import com.jwj.community.web.converter.enumconverter.converters.SearchOrderConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
@@ -24,5 +26,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addFormatters(@NonNull FormatterRegistry registry) {
         WebMvcConfigurer.super.addFormatters(registry);
         registry.addConverter(new BoardTypesConverter());
+        registry.addConverter(new BoardSearchTypeConverter());
+        registry.addConverter(new SearchOrderConverter());
     }
 }

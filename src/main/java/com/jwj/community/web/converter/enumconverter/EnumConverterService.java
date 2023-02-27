@@ -18,6 +18,8 @@ import static com.jwj.community.web.enums.SearchOrder.*;
         -> Enum에 @JsonCreator 어노테이션을 사용하여 매핑
     3. 1번과 2번의 로직은 공통으로 사용하기 위해
         EnumConverterService에 static으로 선언 후 각 위치에서 사용한다.
+
+    참고. 브라우저에서 전송되는 source값이 null이면 spring convert 혹은 @JsonCreator가 작동하지 않는다.
 */
 public class EnumConverterService {
 
