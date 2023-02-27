@@ -2,15 +2,13 @@ package com.jwj.community.domain.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 
+import static com.jwj.community.web.converter.enumconverter.EnumConverterService.stringToSex;
+
 public enum Sex {
     MALE, FEMALE;
 
     @JsonCreator
-    public static Sex parse(String sex) {
-        return switch (sex.toUpperCase()){
-            case "M" -> MALE;
-            case "F" -> FEMALE;
-            default -> null;
-        };
+    public Sex parse(String source) {
+        return stringToSex(source);
     }
 }

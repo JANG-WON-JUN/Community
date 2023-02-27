@@ -16,6 +16,6 @@ public class BoardTypeResponse {
     public BoardTypeResponse(BoardType boardType) {
         this.id = boardType.getId();
         this.boardTypes = boardType.getBoardType();
-        this.description = boardType.getBoardType().getDescriptdion();
+        this.description = boardType.getBoardType().getDescription();
     }
 }
