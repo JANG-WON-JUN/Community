@@ -1,11 +1,11 @@
 package com.jwj.community.web.controller.comment;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jwj.community.config.security.utils.code.JwtTokenFactory;
 import com.jwj.community.domain.service.board.BoardService;
 import com.jwj.community.domain.service.comment.CommentService;
 import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.annotation.ControllerTest;
-import com.jwj.community.web.annotation.WithTestUser;
 import com.jwj.community.web.dto.board.request.BoardCreate;
 import com.jwj.community.web.dto.comment.request.CommentCreate;
 import com.jwj.community.web.dto.comment.request.CommentEdit;
@@ -18,8 +18,8 @@ import org.springframework.context.MessageSource;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.jwj.community.domain.enums.BoardTypes.DAILY;
-import static com.jwj.community.domain.enums.Roles.ROLE_MEMBER;
 import static com.jwj.community.domain.enums.Sex.MALE;
+import static com.jwj.community.web.common.consts.JwtConst.AUTHORIZATION;
 import static java.util.Locale.getDefault;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -52,6 +52,7 @@ class CommentControllerTest {
     private final String TEST_EMAIL = "admin@google.com";
     private final String TEST_ANOTHER_EMAIL = "member@google.com";
     private final String TEST_COMMENT = "댓글 내용";
+    private final JwtTokenFactory jwtTokenFactory = new JwtTokenFactory();
 
     private Long savedBoardId;
 
@@ -96,7 +97,6 @@ class CommentControllerTest {
 
     @Test
     @DisplayName("댓글 등록하기 - 모든정보 입력 시 성공")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void createWithAllInfoTest() throws Exception{
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
@@ -104,6 +104,7 @@ class CommentControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/member/comment")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(commentCreate)))
                 .andExpect(status().isOk())
@@ -113,7 +114,6 @@ class CommentControllerTest {
 
     @Test
     @DisplayName("대댓글 등록하기 - 모든정보 입력 시 성공")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void createNestedCommentWithAllInfoTest() throws Exception{
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
@@ -129,6 +129,7 @@ class CommentControllerTest {
         commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
 
         mockMvc.perform(post("/api/member/comment")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(nestedCommentCreate)))
                 .andExpect(status().isOk())
@@ -138,13 +139,13 @@ class CommentControllerTest {
 
     @Test
     @DisplayName("댓글 등록하기 - 댓글 내용은 필수입력")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredCommentTest() throws Exception{
         CommentCreate commentCreate = CommentCreate.builder()
                 .boardId(savedBoardId)
                 .build();
 
         mockMvc.perform(post("/api/member/comment")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(commentCreate)))
                 .andExpect(status().isBadRequest())
@@ -157,13 +158,13 @@ class CommentControllerTest {
 
     @Test
     @DisplayName("댓글 등록하기 - 게시글 번호는 필수전달")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredBoardIdTest() throws Exception{
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
                 .build();
 
         mockMvc.perform(post("/api/member/comment")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(commentCreate)))
                 .andExpect(status().isBadRequest())
@@ -176,7 +177,6 @@ class CommentControllerTest {
 
     @Test
     @DisplayName("댓글 수정하기 - 모든정보 입력 시 성공")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void editCommentWithAllInfoTest() throws Exception{
         String editedComment = "수정된 댓글 내용";
         CommentCreate commentCreate = CommentCreate.builder()
@@ -192,6 +192,7 @@ class CommentControllerTest {
         commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
 
         mockMvc.perform(patch("/api/member/comment")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(commentEdit)))
                 .andExpect(status().isOk())
@@ -201,7 +202,6 @@ class CommentControllerTest {
 
     @Test
     @DisplayName("댓글 수정하기 - 댓글번호는 필수전달")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredCommentIdTest() throws Exception{
         String editedComment = "수정된 댓글 내용";
         CommentCreate commentCreate = CommentCreate.builder()
@@ -216,6 +216,7 @@ class CommentControllerTest {
         commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
 
         mockMvc.perform(patch("/api/member/comment")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(commentEdit)))
                 .andExpect(status().isBadRequest())
@@ -228,7 +229,6 @@ class CommentControllerTest {
 
     @Test
     @DisplayName("댓글 수정하기 - 댓글을 작성한 사용자가 아니면 수정 불가")
-    @WithTestUser(email = TEST_ANOTHER_EMAIL, role = ROLE_MEMBER)
     void editCommentWriterFailTest() throws Exception{
         String editedComment = "수정된 댓글 내용";
         CommentCreate commentCreate = CommentCreate.builder()
@@ -244,6 +244,7 @@ class CommentControllerTest {
         commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
 
         mockMvc.perform(patch("/api/member/comment")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken(TEST_ANOTHER_EMAIL).getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(commentEdit)))
                 .andExpect(status().isBadRequest())

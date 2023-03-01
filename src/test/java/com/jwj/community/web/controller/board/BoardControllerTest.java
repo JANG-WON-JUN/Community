@@ -1,12 +1,12 @@
 package com.jwj.community.web.controller.board;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jwj.community.config.security.utils.code.JwtTokenFactory;
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.service.board.BoardService;
 import com.jwj.community.domain.service.comment.CommentService;
 import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.annotation.ControllerTest;
-import com.jwj.community.web.annotation.WithTestUser;
 import com.jwj.community.web.common.paging.request.BoardSearchCondition;
 import com.jwj.community.web.dto.board.request.BoardCreate;
 import com.jwj.community.web.dto.board.request.BoardEdit;
@@ -19,14 +19,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 
 import static com.jwj.community.domain.enums.BoardTypes.DAILY;
-import static com.jwj.community.domain.enums.Roles.ROLE_MEMBER;
 import static com.jwj.community.domain.enums.Sex.MALE;
+import static com.jwj.community.web.common.consts.JwtConst.AUTHORIZATION;
 import static java.util.Locale.getDefault;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
@@ -62,6 +64,7 @@ class BoardControllerTest {
     private final String TEST_CONTENT = "글 내용";
     private final String TEST_NICKNAME = "어드민 닉네임";
     private final String TEST_ANOTHER_NICKNAME = "회원 닉네임";
+    private final JwtTokenFactory jwtTokenFactory = new JwtTokenFactory();
 
     @BeforeEach
     public void setup(){
@@ -94,7 +97,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 등록하기 - 모든정보 입력 시 성공")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void createWithAllInfoTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
@@ -104,6 +106,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(boardCreate)))
                 .andExpect(status().isOk())
@@ -113,7 +116,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 등록하기 - 글 제목은 필수입력")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredTitleTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .content(TEST_CONTENT)
@@ -122,6 +124,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(boardCreate)))
                 .andExpect(status().isBadRequest())
@@ -134,7 +137,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 등록하기 - 글 내용은 빈값허용")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void allowBlankContentTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
@@ -144,6 +146,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(boardCreate)))
                 .andExpect(status().isOk())
@@ -153,7 +156,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 등록하기 - 글 내용은 null 허용")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void allowNullContentTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
@@ -163,6 +165,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(boardCreate)))
                 .andExpect(status().isOk())
@@ -172,7 +175,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 등록하기 - 게시판 타입은 필수입력")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredBoardTypeTest() throws Exception{
         BoardCreate boardCreate = BoardCreate.builder()
                 .title(TEST_TITLE)
@@ -182,6 +184,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(post("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON)
                 .content(mapper.writeValueAsString(boardCreate)))
                 .andExpect(status().isBadRequest())
@@ -232,13 +235,13 @@ class BoardControllerTest {
     void boardListWithSearchTitleConditionTest() throws Exception{
         IntStream.rangeClosed(1, 7).forEach(i -> createBoard(TEST_EMAIL));
 
-        Map<String, String> condition = new HashMap<>();
-        condition.put("searchType", "t");
-        condition.put("keyword", "없는 키워드");
+        MultiValueMap<String, String> condition = new LinkedMultiValueMap<>();
+        condition.add("searchType", "t");
+        condition.add("keyword", "없는 키워드");
 
         mockMvc.perform(get("/api/board")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(mapper.writeValueAsString(condition)))
+                .params(condition))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("size").value(0))
                 .andDo(print());
@@ -249,13 +252,13 @@ class BoardControllerTest {
     void boardListWithSearchTitleConditionTest2() throws Exception{
         IntStream.rangeClosed(1, 7).forEach(i -> createBoard(TEST_EMAIL));
 
-        Map<String, String> condition = new HashMap<>();
-        condition.put("searchType", "t");
-        condition.put("keyword", TEST_TITLE);
+        MultiValueMap<String, String> condition = new LinkedMultiValueMap<>();
+        condition.add("searchType", "t");
+        condition.add("keyword", TEST_TITLE);
 
         mockMvc.perform(get("/api/board")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(mapper.writeValueAsString(condition)))
+                .params(condition))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("size").value(7))
                 .andDo(print());
@@ -283,13 +286,13 @@ class BoardControllerTest {
     void boardListWithSearchWriterConditionTest2() throws Exception{
         IntStream.rangeClosed(1, 7).forEach(i -> createBoard(TEST_EMAIL));
 
-        Map<String, String> condition = new HashMap<>();
-        condition.put("searchType", "w");
-        condition.put("keyword", TEST_ANOTHER_NICKNAME);
+        MultiValueMap<String, String> condition = new LinkedMultiValueMap<>();
+        condition.add("searchType", "w");
+        condition.add("keyword", TEST_ANOTHER_NICKNAME);
 
         mockMvc.perform(get("/api/board")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(mapper.writeValueAsString(condition)))
+                .params(condition))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("size").value(0))
                 .andDo(print());
@@ -330,13 +333,13 @@ class BoardControllerTest {
     void boardListWithPagingSearchConditionTest2() throws Exception{
         IntStream.rangeClosed(1, 7).forEach(i -> createBoard(TEST_EMAIL));
 
-        HashMap<String, String> condition = new HashMap<>();
-        condition.put("page", "1");
-        condition.put("size", "10");
+        MultiValueMap<String, String> condition = new LinkedMultiValueMap<>();
+        condition.add("page", "1");
+        condition.add("size", "10");
 
         mockMvc.perform(get("/api/board")
                 .contentType(APPLICATION_JSON_VALUE)
-                .content(mapper.writeValueAsString(condition)))
+                .params(condition))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("size").value(0))
                 .andDo(print());
@@ -379,7 +382,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 수정하기 - 글 수정 성공")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void boardSaveTest() throws Exception{
         Board originalBoard = boardService.getBoard(createBoard(TEST_EMAIL));
         BoardEdit boardEdit = BoardEdit.builder()
@@ -390,6 +392,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(patch("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(boardEdit)))
                 .andExpect(status().isOk())
@@ -399,7 +402,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 수정하기 - 글 번호는 필수전달")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredBoardIdTest() throws Exception{
         Board originalBoard = boardService.getBoard(createBoard(TEST_EMAIL));
         BoardEdit boardEdit = BoardEdit.builder()
@@ -409,6 +411,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(patch("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(boardEdit)))
                 .andExpect(status().isBadRequest())
@@ -420,7 +423,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 수정하기 - 글 제목은 필수입력")
-    @WithTestUser(email = TEST_EMAIL, role = ROLE_MEMBER)
     void requiredTitleForEditBoardTest() throws Exception{
         Board originalBoard = boardService.getBoard(createBoard(TEST_EMAIL));
         BoardEdit boardEdit = BoardEdit.builder()
@@ -430,6 +432,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(patch("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken().getAccessToken())
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(boardEdit)))
                 .andExpect(status().isBadRequest())
@@ -441,7 +444,6 @@ class BoardControllerTest {
 
     @Test
     @DisplayName("글 수정하기 - 글을 작성한 사용자가 아니면 수정 불가")
-    @WithTestUser(email = TEST_ANOTHER_EMAIL, role = ROLE_MEMBER)
     void editBoardWriterFailTest() throws Exception{
         Board originalBoard = boardService.getBoard(createBoard(TEST_EMAIL));
         BoardEdit boardEdit = BoardEdit.builder()
@@ -452,6 +454,7 @@ class BoardControllerTest {
                 .build();
 
         mockMvc.perform(patch("/api/member/board")
+                .header(AUTHORIZATION, jwtTokenFactory.getRequestJwtToken(TEST_ANOTHER_EMAIL).getAccessToken())
                 .contentType(APPLICATION_JSON_VALUE)
                 .content(mapper.writeValueAsString(boardEdit)))
                 .andExpect(status().isBadRequest())

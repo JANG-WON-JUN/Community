@@ -2,6 +2,7 @@ package com.jwj.community.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jwj.community.config.security.entrypoint.JwtAuthenticationEntryPoint;
+import com.jwj.community.config.security.filter.JwtAuthenticationFilter;
 import com.jwj.community.config.security.filter.JwtLoginProcessingFilter;
 import com.jwj.community.config.security.handler.JwtAccessDeniedHandler;
 import com.jwj.community.config.security.handler.JwtAuthenticationFailureHandler;
@@ -47,6 +48,7 @@ import java.util.List;
 
 import static com.jwj.community.domain.enums.Roles.ROLE_ANONYMOUS;
 import static com.jwj.community.domain.enums.Roles.findRole;
+import static com.jwj.community.web.common.consts.AuthPathConst.REQUIRED_AUTH_PATHS;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
@@ -62,13 +64,15 @@ public class SecurityConfig {
     private final JwtTokenUtil jwtTokenUtil;
     private final RefreshTokenService refreshTokenService;
     private final RoleResourcesService roleResourcesService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthorizationManager<RequestAuthorizationContext> access) throws Exception {
         // 어떤 요청이던 access 클래스로 전달한다.
         http
             .authorizeHttpRequests(authorize -> authorize
-                    .requestMatchers("/api/member/**", "/api/admin/**").access(access)
+                    //.requestMatchers("/api/member/**", "/api/admin/**").access(access)
+                    .requestMatchers(REQUIRED_AUTH_PATHS).access(access)
                     .anyRequest().permitAll()
             );
 
@@ -79,6 +83,7 @@ public class SecurityConfig {
 
         // Form인증을 담당하는 UsernamePasswordAuthenticationFilter 이전에 JWT 인증필터가 작동할 수 있도록 설정
         http.addFilterBefore(jwtLoginProcessingFilter(), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         http.exceptionHandling()
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint(messageSource, mapper))

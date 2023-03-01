@@ -28,8 +28,10 @@ public class BoardController {
 
     private final BoardService boardService;
 
+    // @PostMapping일 때는 @RequestBody를 사용하여 http body의 json 데이터를 매핑해주고
+    // @GetMapping일 때는 @RequestBody를 사용하지 않아야 에러가 안난다.
     @GetMapping("/api/board")
-    public ResponseEntity<ListResult<SimpleBoardView>> getBoards(@RequestBody BoardSearchCondition condition){
+    public ResponseEntity<ListResult<SimpleBoardView>> getBoards(BoardSearchCondition condition){
         Page<Board> boardPage = boardService.getBoards(condition);
 
         List<SimpleBoardView> boards = boardPage.stream()

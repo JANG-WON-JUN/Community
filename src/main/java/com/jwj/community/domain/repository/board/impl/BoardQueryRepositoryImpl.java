@@ -1,6 +1,7 @@
 package com.jwj.community.domain.repository.board.impl;
 
 import com.jwj.community.domain.entity.board.Board;
+import com.jwj.community.domain.enums.BoardTypes;
 import com.jwj.community.domain.repository.board.BoardQueryRepository;
 import com.jwj.community.web.common.paging.request.BoardSearchCondition;
 import com.jwj.community.web.enums.BoardSearchType;
@@ -31,7 +32,8 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
         List<Board> boards = queryFactory
                 .selectFrom(board)
                 .where(
-                        tempSaveEq(condition.getTempSave())
+                        tempSaveEq(condition.isTempSave())
+                        .and(boardTypeEq(condition.getBoardType()))
                         .and(searchKeyword(condition.getSearchType(), condition.getKeyword()))
                 )
                 .offset(condition.getPageable().getOffset())
@@ -46,6 +48,10 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
         return nullSafeBuilder(() -> board.tempSave.eq(tempSave));
     }
 
+    private BooleanBuilder boardTypeEq(BoardTypes boardType) {
+        return nullSafeBuilder(() -> board.boardType.boardType.eq(boardType));
+    }
+
     private BooleanBuilder titleLike(String keyword) {
         return nullSafeBuilder(() -> board.title.likeIgnoreCase(keyword));
     }
@@ -55,7 +61,7 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
     }
 
     private BooleanBuilder searchKeyword(BoardSearchType searchType, String keyword) {
-        if(!hasText(keyword)) return null;
+        if(!hasText(keyword) || searchType == null) return null;
 
         return switch(searchType) {
             case TITLE -> titleLike(keyword);
