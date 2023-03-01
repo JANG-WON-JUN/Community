@@ -33,24 +33,24 @@ public class EnumConverterService {
 
     public static Sex stringToSex(String source){
         return switch (source.toUpperCase()){
-            case "M" -> MALE;
-            case "F" -> FEMALE;
+            case "M", "MALE" -> MALE;
+            case "F", "FEMALE" -> FEMALE;
             default -> null;
         };
     }
 
     public static BoardSearchType stringToBoardSearchType(String source){
         return switch (source.toUpperCase()){
-            case "T" -> TITLE;
-            case "W" -> WRITER;
+            case "T", "TITLE" -> TITLE;
+            case "W", "WRITER" -> WRITER;
             default -> null;
         };
     }
 
     public static SearchOrder stringToSearchOrder(String source){
         return switch (source.toUpperCase()){
-            case "V" -> VIEW;
-            case "L" -> LIKE;
+            case "V", "VIEW" -> VIEW;
+            case "L", "LIKE" -> LIKE;
             default -> NEW;
         };
     }

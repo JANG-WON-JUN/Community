@@ -24,8 +24,7 @@ class JwtTokenUtilTest {
     @Autowired
     JwtTokenUtil jwtTokenUtil;
 
-    @Autowired
-    JwtTokenFactory jwtTokenFactory;
+    JwtTokenFactory jwtTokenFactory = new JwtTokenFactory();
 
     @Test
     @DisplayName("회원정보가 유효할 때 access 토큰얻기")
