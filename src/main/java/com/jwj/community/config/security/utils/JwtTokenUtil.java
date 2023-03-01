@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import static com.jwj.community.utils.CommonUtils.isEmpty;
-import static com.jwj.community.web.dto.member.jwt.JwtConst.TOKEN_HEADER_PREFIX;
+import static com.jwj.community.web.common.consts.JwtConst.TOKEN_HEADER_PREFIX;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 import static io.jsonwebtoken.io.Encoders.BASE64;
 import static io.jsonwebtoken.security.Keys.hmacShaKeyFor;
@@ -33,11 +33,14 @@ import static java.util.stream.Collectors.toSet;
 @Component
 public class JwtTokenUtil {
 
-    @Value("${jwt.secretKey}")
-    private String secretKey;
-
     private static final int EXPIRE_DAY = 7;
     private static final int EXPIRE_MONTH = 3;
+
+    private final String secretKey;
+
+    public JwtTokenUtil(@Value("${jwt.secretKey}") String secretKey) {
+        this.secretKey = secretKey;
+    }
 
     // username 으로 토큰생성
     public JwtToken generateToken(Member member){

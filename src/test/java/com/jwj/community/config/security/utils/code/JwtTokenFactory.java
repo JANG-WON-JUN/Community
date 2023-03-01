@@ -8,46 +8,37 @@ import com.jwj.community.domain.enums.Roles;
 import com.jwj.community.web.dto.member.jwt.JwtToken;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import io.jsonwebtoken.Jwts;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
-import static com.jwj.community.domain.enums.Roles.*;
-import static com.jwj.community.web.dto.member.jwt.JwtConst.TOKEN_HEADER_PREFIX;
+import static com.jwj.community.domain.enums.Roles.ROLE_ADMIN;
+import static com.jwj.community.domain.enums.Roles.ROLE_MEMBER;
+import static com.jwj.community.web.common.consts.JwtConst.TOKEN_HEADER_PREFIX;
 import static io.jsonwebtoken.SignatureAlgorithm.HS256;
 import static io.jsonwebtoken.io.Encoders.BASE64;
 import static io.jsonwebtoken.security.Keys.hmacShaKeyFor;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-@Component
-@RequiredArgsConstructor
 public class JwtTokenFactory {
-
-    @Value("${jwt.secretKey}")
-    String SECRET_KEY;
-
-    @Autowired
-    JwtTokenUtil jwtTokenUtil;
-
     private final String TEST_EMAIL = "admin@google.com";
     private final String TEST_PASSWORD = "1234";
+    private final String SECRET_KEY = "47edd4a2-8555-4078-9b53-b652e11fc5dd";
+    private final JwtTokenUtil jwtTokenUtil = new JwtTokenUtil(SECRET_KEY);
 
-    public JwtToken getRequestJwtToken(){
+    public JwtToken getRequestJwtToken(String email){
         Member member = MemberCreate.builder()
-                .email(TEST_EMAIL)
+                .email(email)
                 .build()
                 .toEntity();
-
-        //member.addRole(Roles.ROLE_ADMIN);
-        //member.addRole(ROLE_MEMBER);
 
         JwtToken jwtToken = jwtTokenUtil.generateToken(member);
         jwtToken.setAccessToken(TOKEN_HEADER_PREFIX + " " + jwtToken.getAccessToken());
 
         return jwtToken;
+    }
+
+    public JwtToken getRequestJwtToken(){
+        return getRequestJwtToken(TEST_EMAIL);
     }
 
     public JwtToken getExpiredRequestJwtToken(){
@@ -57,9 +48,9 @@ public class JwtTokenFactory {
         return jwtToken;
     }
 
-    public JwtToken getJwtToken(){
+    public JwtToken getJwtToken(String email){
         Member member = MemberCreate.builder()
-                .email(TEST_EMAIL)
+                .email(email)
                 .name("어드민")
                 .nickname("어드민 닉네임")
                 .password(TEST_PASSWORD)
@@ -73,6 +64,10 @@ public class JwtTokenFactory {
         addAdminRole(member);
 
         return jwtTokenUtil.generateToken(member);
+    }
+
+    public JwtToken getJwtToken(){
+        return getJwtToken(TEST_EMAIL);
     }
 
     public JwtToken getNoEmailJwtToken(){
@@ -89,9 +84,9 @@ public class JwtTokenFactory {
         return jwtTokenUtil.generateToken(member);
     }
 
-    public JwtToken getNoAuthJwtToken(){
+    public JwtToken getNoAuthJwtToken(String email){
         Member member = MemberCreate.builder()
-                .email(TEST_EMAIL)
+                .email(email)
                 .nickname("어드민 닉네임")
                 .password(TEST_PASSWORD)
                 .year(2023)
@@ -102,10 +97,13 @@ public class JwtTokenFactory {
 
         return jwtTokenUtil.generateToken(member);
     }
+    public JwtToken getNoAuthJwtToken(){
+        return getNoAuthJwtToken(TEST_EMAIL);
+    }
 
-    public JwtToken getExpiredJwtToken(){
+    public JwtToken getExpiredJwtToken(String email){
         Member member = MemberCreate.builder()
-                .email(TEST_EMAIL)
+                .email(email)
                 .nickname("어드민 닉네임")
                 .password(TEST_PASSWORD)
                 .year(2023)
@@ -131,6 +129,9 @@ public class JwtTokenFactory {
                 .accessToken(expiredAccessToken)
                 .refreshToken(expiredRefreshToken)
                 .build();
+    }
+    public JwtToken getExpiredJwtToken(){
+        return getExpiredJwtToken(TEST_EMAIL);
     }
 
     private String encodedSecretKey(String secretKey){
