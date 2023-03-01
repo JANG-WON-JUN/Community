@@ -8,7 +8,7 @@ public enum Sex {
     MALE, FEMALE;
 
     @JsonCreator
-    public Sex parse(String source) {
+    public static Sex parse(String source) {
         return stringToSex(source);
     }
 }

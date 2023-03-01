@@ -15,7 +15,7 @@ public enum BoardTypes {
     private String description;
 
     @JsonCreator
-    public BoardTypes parse(String source){
+    public static BoardTypes parse(String source){
         return stringToBoardTypes(source);
     }
 }
