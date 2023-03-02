@@ -1,5 +1,6 @@
 package com.jwj.community.web.dto.board.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.entity.board.Comment;
 import com.jwj.community.domain.enums.BoardTypes;
@@ -24,7 +25,11 @@ public class BoardView {
     private boolean tempSave;
     private BoardTypes boardType;
     private BoardWriter writer;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime regDate;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime modDate;
 
     @Builder
