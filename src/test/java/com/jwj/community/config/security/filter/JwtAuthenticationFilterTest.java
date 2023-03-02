@@ -22,6 +22,7 @@ import static com.jwj.community.web.common.consts.JwtConst.AUTHORIZATION;
 import static java.util.Locale.getDefault;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -136,32 +137,16 @@ class JwtAuthenticationFilterTest {
 
     @Test
     @DisplayName("Jwt 토큰이 만료되었을 때")
-    public void test3() throws Exception{
-
-    }
-
-    @Test
-    @DisplayName("Jwt 서명이 유효하지 않을 때")
-    public void test4() throws Exception{
-
-    }
-/*
-    @Test
-    @DisplayName("Jwt 토큰이 만료되었을 때")
-    public void test3() throws Exception{
-        // given
-        JwtToken jwtToken = jwtTokenFactory.getExpiredRequestJwtToken();
+    public void expiredTokenTest() throws Exception {
         // expected
-        mockMvc.perform(put("/api/board")
-                .contentType(APPLICATION_JSON)
-                .header(AUTHORIZATION, jwtToken.getAccessToken()))
+        mockMvc.perform(put("/api/member")
+                .header(AUTHORIZATION, jwtTokenFactory.getExpiredRequestJwtToken().getAccessToken())
+                .contentType(APPLICATION_JSON))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("errorCode").value(String.valueOf(UNAUTHORIZED.value())))
+                .andExpect(jsonPath("errorCode").value("401"))
                 .andExpect(jsonPath("errorMessage").value(messageSource.getMessage("error.expiredJwtToken", null, getDefault())))
                 .andDo(print());
     }
-
- */
 
     private void addRole(Member member, Roles roles) {
         Role savedRole = roleService.findByRoleName(roles);
