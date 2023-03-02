@@ -1,5 +1,6 @@
 package com.jwj.community.web.dto.board.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.enums.BoardTypes;
 import com.jwj.community.domain.enums.State;
@@ -18,6 +19,8 @@ public class SimpleBoardView {
     private State state;
     private BoardTypes boardType;
     private String writerNickname;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime regDate;
 
     @Builder
