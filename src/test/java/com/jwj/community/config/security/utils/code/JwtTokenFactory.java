@@ -41,11 +41,15 @@ public class JwtTokenFactory {
         return getRequestJwtToken(TEST_EMAIL);
     }
 
-    public JwtToken getExpiredRequestJwtToken(){
-        JwtToken jwtToken = getExpiredJwtToken();
+    public JwtToken getExpiredRequestJwtToken(String email){
+        JwtToken jwtToken = getExpiredJwtToken(email);
         jwtToken.setAccessToken(TOKEN_HEADER_PREFIX + " " + jwtToken.getAccessToken());
 
         return jwtToken;
+    }
+
+    public JwtToken getExpiredRequestJwtToken(){
+        return getExpiredRequestJwtToken(TEST_EMAIL);
     }
 
     public JwtToken getJwtToken(String email){
@@ -130,6 +134,7 @@ public class JwtTokenFactory {
                 .refreshToken(expiredRefreshToken)
                 .build();
     }
+
     public JwtToken getExpiredJwtToken(){
         return getExpiredJwtToken(TEST_EMAIL);
     }
