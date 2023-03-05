@@ -41,7 +41,17 @@ public class BoardQueryRepositoryImpl implements BoardQueryRepository {
                 .orderBy(searchOrders(condition.getSearchOrder()))
                 .fetch();
 
-        return new PageImpl<>(boards, condition.getPageable(), boards.size());
+        long totals = queryFactory
+                .selectFrom(board)
+                .where(
+                        tempSaveEq(condition.isTempSave())
+                        .and(boardTypeEq(condition.getBoardType()))
+                        .and(searchKeyword(condition.getSearchType(), condition.getKeyword()))
+                )
+                .fetch()
+                .size();
+
+        return new PageImpl<>(boards, condition.getPageable(), totals);
     }
 
     private BooleanBuilder tempSaveEq(boolean tempSave) {

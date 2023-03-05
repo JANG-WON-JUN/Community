@@ -2,8 +2,10 @@ package com.jwj.community.web.controller.board;
 
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.service.board.BoardService;
+import com.jwj.community.domain.service.comment.CommentService;
 import com.jwj.community.web.annotation.LoginMember;
 import com.jwj.community.web.common.paging.request.BoardSearchCondition;
+import com.jwj.community.web.common.paging.request.CommentSearchCondition;
 import com.jwj.community.web.common.result.ListResult;
 import com.jwj.community.web.common.result.Result;
 import com.jwj.community.web.dto.board.request.BoardCreate;
@@ -27,6 +29,7 @@ import static org.springframework.http.ResponseEntity.ok;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
 
     // @PostMapping일 때는 @RequestBody를 사용하여 http body의 json 데이터를 매핑해주고
     // @GetMapping일 때는 @RequestBody를 사용하지 않아야 에러가 안난다.
@@ -50,8 +53,17 @@ public class BoardController {
     public ResponseEntity<Result<BoardView>> getBoard(@PathVariable Long id){
         Board savedBoard = boardService.getBoard(id);
 
+        CommentSearchCondition condition = CommentSearchCondition.builder()
+                .boardId(id)
+                .build();
+
+        BoardView boardView = BoardView.builder()
+                .board(savedBoard)
+                .comments(commentService.getComments(condition).getContent())
+                .build();
+
         Result<BoardView> result = Result.<BoardView>builder()
-                .data(BoardView.builder().board(savedBoard).build())
+                .data(boardView)
                 .build();
 
         return ok(result);
