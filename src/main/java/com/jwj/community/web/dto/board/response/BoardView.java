@@ -33,7 +33,7 @@ public class BoardView {
     private LocalDateTime modDate;
 
     @Builder
-    public BoardView(Board board) {
+    public BoardView(Board board, List<Comment> comments) {
         BoardWriter boardWriter = BoardWriter.builder()
                 .id(board.getMember().getId())
                 .email(board.getMember().getEmail())
@@ -48,7 +48,7 @@ public class BoardView {
         this.regDate = board.getRegDate();
         this.modDate = board.getModDate();
         this.boardType = board.getBoardType().getBoardType();
-        this.comments = parseComment(board.getComments());
+        this.comments = parseComment(comments);
         this.writer = boardWriter;
     }
 

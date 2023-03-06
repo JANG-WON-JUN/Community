@@ -4,6 +4,7 @@ import com.jwj.community.domain.entity.board.Comment;
 import com.jwj.community.domain.service.board.BoardService;
 import com.jwj.community.domain.service.member.MemberService;
 import com.jwj.community.web.annotation.ServiceTest;
+import com.jwj.community.web.common.paging.request.CommentSearchCondition;
 import com.jwj.community.web.dto.board.request.BoardCreate;
 import com.jwj.community.web.dto.comment.request.CommentCreate;
 import com.jwj.community.web.dto.comment.request.CommentEdit;
@@ -94,9 +95,15 @@ class CommentServiceTest {
                 .boardId(savedBoardId)
                 .build();
 
+
         // when
         Long savedBoardId = commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
-        List<Comment> comments = commentService.getComments(savedBoardId);
+
+        CommentSearchCondition condition = CommentSearchCondition.builder()
+                .boardId(savedBoardId)
+                .build();
+
+        List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
         assertThat(comments.size()).isEqualTo(1);
@@ -120,7 +127,12 @@ class CommentServiceTest {
 
         // when
         Long savedBoardId = commentService.createComment(commentCreate.toEntity(), TEST_ANOTHER_EMAIL);
-        List<Comment> comments = commentService.getComments(savedBoardId);
+
+        CommentSearchCondition condition = CommentSearchCondition.builder()
+                .boardId(savedBoardId)
+                .build();
+
+        List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
         assertThat(comments.size()).isEqualTo(1);
@@ -151,7 +163,11 @@ class CommentServiceTest {
         Long savedBoardId = commentService.createComment(nestedCommentCreate.toEntity(), TEST_ANOTHER_EMAIL);
 
         // when
-        List<Comment> comments = commentService.getComments(savedBoardId);
+        CommentSearchCondition condition = CommentSearchCondition.builder()
+                .boardId(savedBoardId)
+                .build();
+
+        List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
         assertThat(comments.size()).isEqualTo(2);
@@ -197,7 +213,11 @@ class CommentServiceTest {
         Long savedBoardId = commentService.createComment(nestedCommentCreate2.toEntity(), TEST_ANOTHER_EMAIL);
 
         // when
-        List<Comment> comments = commentService.getComments(savedBoardId);
+        CommentSearchCondition condition = CommentSearchCondition.builder()
+                .boardId(savedBoardId)
+                .build();
+
+        List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
         assertThat(comments.size()).isEqualTo(3);
@@ -249,7 +269,11 @@ class CommentServiceTest {
         Long savedBoardId = commentService.createComment(nestedCommentCreate2.toEntity(), TEST_ANOTHER_EMAIL);
 
         // when
-        List<Comment> comments = commentService.getComments(savedBoardId);
+        CommentSearchCondition condition = CommentSearchCondition.builder()
+                .boardId(savedBoardId)
+                .build();
+
+        List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
         assertThat(comments.size()).isEqualTo(3);
@@ -312,7 +336,11 @@ class CommentServiceTest {
         // when
         commentService.editComment(commentEdit.toEntity(), TEST_EMAIL);
 
-        List<Comment> comments = commentService.getComments(savedBoardId);
+        CommentSearchCondition condition = CommentSearchCondition.builder()
+                .boardId(savedBoardId)
+                .build();
+
+        List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
         assertThat(comments.size()).isEqualTo(1);
