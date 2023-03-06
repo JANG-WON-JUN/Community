@@ -3,7 +3,13 @@ package com.jwj.community.domain.entity.board;
 import com.jwj.community.domain.entity.BaseEntity;
 import com.jwj.community.domain.entity.member.Member;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "COMMENT_TB")
@@ -22,8 +28,11 @@ public class Comment extends BaseEntity {
     private Integer commentOrder = 1; // 같은 그룹 내에서 순서 (등록일자 순으로 부여)
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(referencedColumnName = "id")
+    @JoinColumn(name = "parent_id", referencedColumnName = "id")
     private Comment parent;
+
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, orphanRemoval = true)
+    private List<Comment> children = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")

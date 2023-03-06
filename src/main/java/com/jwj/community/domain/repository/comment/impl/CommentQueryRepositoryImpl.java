@@ -3,9 +3,12 @@ package com.jwj.community.domain.repository.comment.impl;
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.entity.board.Comment;
 import com.jwj.community.domain.repository.comment.CommentQueryRepository;
+import com.jwj.community.web.common.paging.request.CommentSearchCondition;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -21,41 +24,54 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
 
     @Override
     public Integer getMaxCommentGroup(Board board) {
-        return queryFactory
+        Long maxCommentGroup = queryFactory
                 .select(comment1.count())
                 .from(comment1)
                 .where(boardEq(board))
-                .fetchOne()
-                .intValue();
+                .fetchOne();
+
+        return maxCommentGroup == null ? null : maxCommentGroup.intValue();
     }
 
     @Override
     public Integer getMaxCommentOrder(Board board, Integer commentGroup) {
-        return queryFactory
+        Long maxCommentOrder = queryFactory
                 .select(comment1.count())
                 .from(comment1)
                 .where(boardEq(board).and(commentGroupEq(commentGroup)))
-                .fetchOne()
-                .intValue();
+                .fetchOne();
+
+        return maxCommentOrder == null ? null : maxCommentOrder.intValue();
     }
 
     @Override
-    public List<Comment> getComments(Board board) {
-        return queryFactory
+    public Page<Comment> getComments(CommentSearchCondition condition, Board board) {
+        List<Comment> comments = queryFactory
+                .select(comment1)
+                .from(comment1)
+                .where(boardEq(board).and(parentNull()))
+                .orderBy(comment1.commentGroup.asc(), comment1.commentGroup.asc(), comment1.regDate.asc())
+                .fetch();
+
+        long total = queryFactory
                 .select(comment1)
                 .from(comment1)
                 .where(boardEq(board))
-                .orderBy(comment1.commentGroup.asc(), comment1.commentGroup.asc(), comment1.regDate.asc())
-                .fetch();
+                .fetch()
+                .size();
+
+        return new PageImpl<>(comments, condition.getPageable(), total);
     }
 
     private BooleanBuilder boardEq(Board board) {
         return nullSafeBuilder(() -> comment1.board.eq(board));
     }
 
+    private BooleanBuilder parentNull() {
+        return nullSafeBuilder(comment1.parent::isNull);
+    }
+
     private BooleanBuilder commentGroupEq(Integer commentGroup) {
         return nullSafeBuilder(() -> comment1.commentGroup.eq(commentGroup));
     }
-
-
 }

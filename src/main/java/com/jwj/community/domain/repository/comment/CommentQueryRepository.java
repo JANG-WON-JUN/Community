@@ -2,8 +2,8 @@ package com.jwj.community.domain.repository.comment;
 
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.entity.board.Comment;
-
-import java.util.List;
+import com.jwj.community.web.common.paging.request.CommentSearchCondition;
+import org.springframework.data.domain.Page;
 
 public interface CommentQueryRepository {
 
@@ -11,5 +11,5 @@ public interface CommentQueryRepository {
 
     Integer getMaxCommentOrder(Board board, Integer commentGroup);
 
-    List<Comment> getComments(Board board);
+    Page<Comment> getComments(CommentSearchCondition condition, Board board);
 }

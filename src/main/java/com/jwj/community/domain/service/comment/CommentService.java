@@ -6,13 +6,13 @@ import com.jwj.community.domain.repository.comment.CommentRepository;
 import com.jwj.community.domain.service.board.BoardService;
 import com.jwj.community.domain.service.member.MemberCheckService;
 import com.jwj.community.domain.service.member.MemberService;
+import com.jwj.community.web.common.paging.request.CommentSearchCondition;
 import com.jwj.community.web.exception.CommentNotFound;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import static java.util.Locale.getDefault;
 
@@ -48,8 +48,8 @@ public class CommentService {
         return savedComment.getBoard().getId();
     }
 
-    public List<Comment> getComments(Long boardId){
-        return commentRepository.getComments(boardService.getBoard(boardId));
+    public Page<Comment> getComments(CommentSearchCondition condition){
+        return commentRepository.getComments(condition, boardService.getBoard(condition.getBoardId()));
     }
 
     public Long editComment(Comment comment, String email){
