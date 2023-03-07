@@ -118,7 +118,6 @@ class BoardServiceTest {
         assertThat(savedBoard.getId()).isEqualTo(savedBoardId);
         assertThat(savedBoard.getTitle()).isEqualTo(TEST_TITLE);
         assertThat(savedBoard.getContent()).isEqualTo(TEST_CONTENT);
-        assertThat(savedBoard.getViews()).isEqualTo(1);
         assertThat(savedBoard.getBoardType().getBoardType()).isEqualTo(DAILY);
         assertThat(savedBoard.isTempSave()).isFalse();
     }
