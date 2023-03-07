@@ -37,9 +37,7 @@ public class BoardService {
     }
 
     public Board getBoard(Long id){
-        Board savedBoard = findById(id);
-        savedBoard.increaseViews();
-        return savedBoard;
+        return findById(id);
     }
 
     public Long editBoard(Board board, String email){
@@ -53,6 +51,10 @@ public class BoardService {
     public void deleteBoard(Long id, String email){
         isBoardEditable(findById(id), email);
         boardRepository.deleteById(id);
+    }
+
+    public void increaseViews(Board board){
+        board.increaseViews();
     }
 
     private Board findById(Long id){
