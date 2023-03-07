@@ -13,6 +13,9 @@ import com.jwj.community.web.dto.board.request.BoardEdit;
 import com.jwj.community.web.dto.board.response.BoardView;
 import com.jwj.community.web.dto.board.response.SimpleBoardView;
 import com.jwj.community.web.dto.member.login.LoggedInMember;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.jwj.community.utils.CommonUtils.findCookieByName;
+import static com.jwj.community.web.common.consts.CookieNameConst.*;
 import static java.util.stream.Collectors.toList;
 import static org.springframework.http.ResponseEntity.ok;
 
@@ -34,7 +39,7 @@ public class BoardController {
     // @PostMapping일 때는 @RequestBody를 사용하여 http body의 json 데이터를 매핑해주고
     // @GetMapping일 때는 @RequestBody를 사용하지 않아야 에러가 안난다.
     @GetMapping("/api/board")
-    public ResponseEntity<ListResult<SimpleBoardView>> getBoards(BoardSearchCondition condition){
+    public ResponseEntity<ListResult<SimpleBoardView>> getBoards(BoardSearchCondition condition) {
         Page<Board> boardPage = boardService.getBoards(condition);
 
         List<SimpleBoardView> boards = boardPage.stream()
@@ -50,8 +55,15 @@ public class BoardController {
     }
 
     @GetMapping("/api/board/{id}")
-    public ResponseEntity<Result<BoardView>> getBoard(@PathVariable Long id){
+    public ResponseEntity<Result<BoardView>> getBoard(@PathVariable Long id, HttpServletRequest request, HttpServletResponse response) {
         Board savedBoard = boardService.getBoard(id);
+        Cookie boardViewCookie = findCookieByName(request.getCookies(), BOARD_VIEW);
+
+        if (!isReadBoard(boardViewCookie, savedBoard.getId())) {
+            boardService.increaseViews(savedBoard);
+            Cookie addedCookie = addBoardToCookie(boardViewCookie, savedBoard.getId());
+            response.addCookie(addedCookie);
+        }
 
         CommentSearchCondition condition = CommentSearchCondition.builder()
                 .boardId(id)
@@ -71,7 +83,7 @@ public class BoardController {
 
     @PostMapping("/api/member/board")
     public ResponseEntity<Result<Long>> createBoard(@Valid @RequestBody BoardCreate boardCreate,
-                                                    @LoginMember LoggedInMember loggedInMember){
+                                                    @LoginMember LoggedInMember loggedInMember) {
         Result<Long> result = Result.<Long>builder()
                 .data(boardService.createBoard(boardCreate.toEntity(), loggedInMember.getEmail()))
                 .build();
@@ -81,16 +93,34 @@ public class BoardController {
 
     @PatchMapping("/api/member/board")
     public ResponseEntity<Result<Long>> editBoard(@Valid @RequestBody BoardEdit boardEdit,
-                                                  @LoginMember LoggedInMember loggedInMember){
+                                                  @LoginMember LoggedInMember loggedInMember) {
         Result<Long> result = Result.<Long>builder()
-                .data(boardService.editBoard(boardEdit.toEntity(),  loggedInMember.getEmail()))
+                .data(boardService.editBoard(boardEdit.toEntity(), loggedInMember.getEmail()))
                 .build();
 
         return ok(result);
     }
 
     @DeleteMapping("/api/member/board/{id}")
-    public void deleteBoard(@PathVariable Long id, @LoginMember LoggedInMember loggedInMember){
+    public void deleteBoard(@PathVariable Long id, @LoginMember LoggedInMember loggedInMember) {
         boardService.deleteBoard(id, loggedInMember.getEmail());
+    }
+
+    private boolean isReadBoard(Cookie boardViewCookie, Long id) {
+        return boardViewCookie != null && boardViewCookie.getValue().contains("[" + id + "]");
+    }
+
+    private Cookie addBoardToCookie(Cookie boardViewCookie, Long id) {
+        String cookieValue = "[" + id + "]";
+
+        if(boardViewCookie == null){
+            boardViewCookie = new Cookie(BOARD_VIEW, cookieValue);
+            boardViewCookie.setPath(COOKIE_PATH);
+            boardViewCookie.setMaxAge(A_WEEK);
+        }else{
+            boardViewCookie.setValue(boardViewCookie.getValue() + cookieValue);
+        }
+
+        return boardViewCookie;
     }
 }

@@ -13,6 +13,7 @@ import com.jwj.community.web.dto.board.request.BoardEdit;
 import com.jwj.community.web.dto.comment.request.CommentCreate;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.exception.BoardNotFound;
+import jakarta.servlet.http.Cookie;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,14 +29,14 @@ import java.util.stream.IntStream;
 
 import static com.jwj.community.domain.enums.BoardTypes.DAILY;
 import static com.jwj.community.domain.enums.Sex.MALE;
+import static com.jwj.community.web.common.consts.CookieNameConst.BOARD_VIEW;
 import static com.jwj.community.web.common.consts.JwtConst.AUTHORIZATION;
 import static java.util.Locale.getDefault;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @ControllerTest
 class BoardControllerTest {
@@ -363,6 +364,54 @@ class BoardControllerTest {
                 .andExpect(jsonPath("data.title").value(TEST_TITLE))
                 .andExpect(jsonPath("data.comments[0].id").value(1L))
                 .andExpect(jsonPath("data.comments[0].comment").value(testComment))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 1개 조회하기 - 조회수 증가 성공")
+    void boardIncreaseViewsTest() throws Exception{
+        Long savedBoardId = createBoard(TEST_EMAIL);
+
+        mockMvc.perform(get("/api/board/{id}", savedBoardId)
+                .contentType(APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("data.title").value(TEST_TITLE))
+                .andExpect(jsonPath("data.views").value(1))
+                .andExpect(cookie().exists(BOARD_VIEW))
+                .andExpect(cookie().value(BOARD_VIEW, "[" + savedBoardId + "]"))
+                .andDo(print());
+    }
+
+    // 쿠키에 이미 읽은 기록이 있어서 조회수 증가 안함
+    // 쿠키가 있지만 읽은 기록이 없어서 조회수 증가함
+
+    @Test
+    @DisplayName("글 1개 조회하기 - 이미 읽은 게시글은 조회수 증가 X")
+    void boardNoIncreaseViewsTest() throws Exception{
+        Long savedBoardId = createBoard(TEST_EMAIL);
+        Cookie boardViewCookie = new Cookie(BOARD_VIEW, "[" + savedBoardId + "]");
+
+        mockMvc.perform(get("/api/board/{id}", savedBoardId)
+                .contentType(APPLICATION_JSON_VALUE)
+                .cookie(boardViewCookie))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("data.title").value(TEST_TITLE))
+                .andExpect(jsonPath("data.views").value(0))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("글 1개 조회하기 - 이미 읽은 게시글은 조회수 증가 X")
+    void boardIncreaseViewsWithCookiesTest() throws Exception{
+        Long savedBoardId = createBoard(TEST_EMAIL);
+        Cookie boardViewCookie = new Cookie(BOARD_VIEW, "[" + 10000 + "]");
+
+        mockMvc.perform(get("/api/board/{id}", savedBoardId)
+                .contentType(APPLICATION_JSON_VALUE)
+                .cookie(boardViewCookie))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("data.title").value(TEST_TITLE))
+                .andExpect(jsonPath("data.views").value(1))
                 .andDo(print());
     }
 
