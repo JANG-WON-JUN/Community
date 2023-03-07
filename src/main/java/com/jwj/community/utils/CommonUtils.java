@@ -2,11 +2,13 @@ package com.jwj.community.utils;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import jakarta.servlet.http.Cookie;
 import org.springframework.util.ObjectUtils;
 
 import java.time.DateTimeException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.function.Supplier;
 
 import static java.time.LocalDateTime.now;
@@ -51,5 +53,16 @@ public class CommonUtils {
         }catch (DateTimeException ex) {
             return false;
         }
+    }
+
+    public static Cookie findCookieByName(Cookie[] cookies, String name){
+        if(cookies == null || cookies.length == 0 || name == null){
+            return null;
+        }
+
+        return Arrays.stream(cookies)
+                .filter(cookie -> cookie.getName().equals(name))
+                .findFirst()
+                .orElse(null);
     }
 }
