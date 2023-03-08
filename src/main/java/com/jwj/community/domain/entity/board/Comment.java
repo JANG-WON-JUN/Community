@@ -30,7 +30,6 @@ public class Comment extends BaseEntity {
     private Comment parent;
 
     @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @OrderBy("id desc")
     private List<Comment> children = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)

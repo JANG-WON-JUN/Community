@@ -35,12 +35,13 @@ public class CommentService {
 
             comment.setCommentGroup(maxCommentGroup + 1);
         }else{
-            Comment parent = comment.getParent();
+            Comment parent = findById(comment.getParent().getId());
             Integer maxCommentOrder = commentRepository.getMaxCommentOrder(savedBoard, parent.getCommentGroup());
 
+            comment.setParent(parent);
             comment.setCommentGroup(parent.getCommentGroup());
             comment.setCommentOrder(maxCommentOrder + 1);
-            
+
             parent.addChild(comment);
         }
         Comment savedComment = commentRepository.save(comment);

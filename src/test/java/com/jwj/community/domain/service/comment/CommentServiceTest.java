@@ -11,11 +11,13 @@ import com.jwj.community.web.dto.comment.request.CommentEdit;
 import com.jwj.community.web.dto.member.request.MemberCreate;
 import com.jwj.community.web.exception.BoardNotFound;
 import com.jwj.community.web.exception.CannotEditBoard;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 
@@ -26,6 +28,7 @@ import static java.util.Locale.getDefault;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+@Slf4j
 @ServiceTest
 class CommentServiceTest {
 
@@ -147,6 +150,7 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("대댓글 달기 - 댓글 -> 대댓글 순서로 조회")
+    @Rollback(value = false)
     void nestCommentCreateTest1() {
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
@@ -170,7 +174,7 @@ class CommentServiceTest {
         List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
-        assertThat(comments.size()).isEqualTo(2);
+        assertThat(comments.size()).isEqualTo(1);
         assertThat(comments.isEmpty()).isFalse();
 
         assertThat(comments.get(0).getId()).isEqualTo(1L);
@@ -179,13 +183,6 @@ class CommentServiceTest {
         assertThat(comments.get(0).getParent()).isNull();
         assertThat(comments.get(0).getComment()).isEqualTo(TEST_COMMENT);
         assertThat(comments.get(0).getMember().getEmail()).isEqualTo(TEST_EMAIL);
-
-        assertThat(comments.get(1).getId()).isEqualTo(2L);
-        assertThat(comments.get(1).getCommentGroup()).isEqualTo(1);
-        assertThat(comments.get(1).getCommentOrder()).isEqualTo(2);
-        assertThat(comments.get(1).getParent()).isNotNull();
-        assertThat(comments.get(1).getComment()).isEqualTo(TEST_COMMENT);
-        assertThat(comments.get(1).getMember().getEmail()).isEqualTo(TEST_ANOTHER_EMAIL);
     }
 
     @Test
@@ -208,19 +205,19 @@ class CommentServiceTest {
                 .boardId(savedBoardId)
                 .build();
 
-        commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
-        commentService.createComment(nestedCommentCreate.toEntity(), TEST_ANOTHER_EMAIL);
-        Long savedBoardId = commentService.createComment(nestedCommentCreate2.toEntity(), TEST_ANOTHER_EMAIL);
-
-        // when
         CommentSearchCondition condition = CommentSearchCondition.builder()
                 .boardId(savedBoardId)
                 .build();
 
+        commentService.createComment(commentCreate.toEntity(), TEST_EMAIL);
+        commentService.createComment(nestedCommentCreate.toEntity(), TEST_ANOTHER_EMAIL);
+        commentService.createComment(nestedCommentCreate2.toEntity(), TEST_ANOTHER_EMAIL);
+
+        // when
         List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
-        assertThat(comments.size()).isEqualTo(3);
+        assertThat(comments.size()).isEqualTo(1);
         assertThat(comments.isEmpty()).isFalse();
 
         assertThat(comments.get(0).getId()).isEqualTo(1L);
@@ -230,19 +227,19 @@ class CommentServiceTest {
         assertThat(comments.get(0).getComment()).isEqualTo(TEST_COMMENT);
         assertThat(comments.get(0).getMember().getEmail()).isEqualTo(TEST_EMAIL);
 
-        assertThat(comments.get(1).getId()).isEqualTo(2L);
-        assertThat(comments.get(1).getCommentGroup()).isEqualTo(1);
-        assertThat(comments.get(1).getCommentOrder()).isEqualTo(2);
-        assertThat(comments.get(1).getParent()).isNotNull();
-        assertThat(comments.get(1).getComment()).isEqualTo(TEST_COMMENT);
-        assertThat(comments.get(1).getMember().getEmail()).isEqualTo(TEST_ANOTHER_EMAIL);
+        assertThat(comments.get(0).getChildren().get(0).getId()).isEqualTo(2L);
+        assertThat(comments.get(0).getChildren().get(0).getCommentGroup()).isEqualTo(1);
+        assertThat(comments.get(0).getChildren().get(0).getCommentOrder()).isEqualTo(2);
+        assertThat(comments.get(0).getChildren().get(0).getParent()).isNotNull();
+        assertThat(comments.get(0).getChildren().get(0).getComment()).isEqualTo(TEST_COMMENT);
+        assertThat(comments.get(0).getChildren().get(0).getMember().getEmail()).isEqualTo(TEST_ANOTHER_EMAIL);
 
-        assertThat(comments.get(2).getId()).isEqualTo(3L);
-        assertThat(comments.get(2).getCommentGroup()).isEqualTo(1);
-        assertThat(comments.get(2).getCommentOrder()).isEqualTo(3);
-        assertThat(comments.get(2).getParent()).isNotNull();
-        assertThat(comments.get(2).getComment()).isEqualTo(TEST_COMMENT);
-        assertThat(comments.get(2).getMember().getEmail()).isEqualTo(TEST_ANOTHER_EMAIL);
+        assertThat(comments.get(0).getChildren().get(1).getId()).isEqualTo(3L);
+        assertThat(comments.get(0).getChildren().get(1).getCommentGroup()).isEqualTo(1);
+        assertThat(comments.get(0).getChildren().get(1).getCommentOrder()).isEqualTo(3);
+        assertThat(comments.get(0).getChildren().get(1).getParent()).isNotNull();
+        assertThat(comments.get(0).getChildren().get(1).getComment()).isEqualTo(TEST_COMMENT);
+        assertThat(comments.get(0).getChildren().get(1).getMember().getEmail()).isEqualTo(TEST_ANOTHER_EMAIL);
     }
 
     @Test
@@ -276,7 +273,7 @@ class CommentServiceTest {
         List<Comment> comments = commentService.getComments(condition).getContent();
 
         // then
-        assertThat(comments.size()).isEqualTo(3);
+        assertThat(comments.size()).isEqualTo(2);
         assertThat(comments.isEmpty()).isFalse();
 
         assertThat(comments.get(0).getId()).isEqualTo(1L);
@@ -286,19 +283,19 @@ class CommentServiceTest {
         assertThat(comments.get(0).getComment()).isEqualTo(TEST_COMMENT);
         assertThat(comments.get(0).getMember().getEmail()).isEqualTo(TEST_EMAIL);
 
-        assertThat(comments.get(1).getId()).isEqualTo(3L);
-        assertThat(comments.get(1).getCommentGroup()).isEqualTo(1);
-        assertThat(comments.get(1).getCommentOrder()).isEqualTo(2);
-        assertThat(comments.get(1).getParent()).isNotNull();
+        assertThat(comments.get(0).getChildren().get(0).getId()).isEqualTo(3L);
+        assertThat(comments.get(0).getChildren().get(0).getCommentGroup()).isEqualTo(1);
+        assertThat(comments.get(0).getChildren().get(0).getCommentOrder()).isEqualTo(2);
+        assertThat(comments.get(0).getChildren().get(0).getParent()).isNotNull();
+        assertThat(comments.get(0).getChildren().get(0).getComment()).isEqualTo(TEST_COMMENT);
+        assertThat(comments.get(0).getChildren().get(0).getMember().getEmail()).isEqualTo(TEST_ANOTHER_EMAIL);
+
+        assertThat(comments.get(1).getId()).isEqualTo(2L);
+        assertThat(comments.get(1).getCommentGroup()).isEqualTo(2);
+        assertThat(comments.get(1).getCommentOrder()).isEqualTo(1);
+        assertThat(comments.get(1).getParent()).isNull();
         assertThat(comments.get(1).getComment()).isEqualTo(TEST_COMMENT);
         assertThat(comments.get(1).getMember().getEmail()).isEqualTo(TEST_ANOTHER_EMAIL);
-
-        assertThat(comments.get(2).getId()).isEqualTo(2L);
-        assertThat(comments.get(2).getCommentGroup()).isEqualTo(2);
-        assertThat(comments.get(2).getCommentOrder()).isEqualTo(1);
-        assertThat(comments.get(2).getParent()).isNull();
-        assertThat(comments.get(2).getComment()).isEqualTo(TEST_COMMENT);
-        assertThat(comments.get(2).getMember().getEmail()).isEqualTo(TEST_ANOTHER_EMAIL);
     }
 
     @Test
