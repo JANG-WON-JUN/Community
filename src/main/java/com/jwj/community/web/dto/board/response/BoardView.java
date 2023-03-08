@@ -6,7 +6,7 @@ import com.jwj.community.domain.entity.board.Comment;
 import com.jwj.community.domain.enums.BoardTypes;
 import com.jwj.community.domain.enums.State;
 import com.jwj.community.web.dto.comment.response.CommentView;
-import com.jwj.community.web.dto.member.response.BoardWriter;
+import com.jwj.community.web.dto.member.response.Writer;
 import lombok.Builder;
 import lombok.Data;
 
@@ -24,7 +24,7 @@ public class BoardView {
     private State state;
     private boolean tempSave;
     private BoardTypes boardType;
-    private BoardWriter writer;
+    private Writer writer;
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime regDate;
@@ -34,7 +34,7 @@ public class BoardView {
 
     @Builder
     public BoardView(Board board, List<Comment> comments) {
-        BoardWriter boardWriter = BoardWriter.builder()
+        Writer boardWriter = Writer.builder()
                 .id(board.getMember().getId())
                 .email(board.getMember().getEmail())
                 .nickname(board.getMember().getNickname())

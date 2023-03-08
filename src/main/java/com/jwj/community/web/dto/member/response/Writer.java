@@ -4,14 +4,14 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class BoardWriter {
+public class Writer {
 
     private Long id;
     private String email;
     private String nickname;
 
     @Builder
-    public BoardWriter(Long id, String email, String nickname) {
+    public Writer(Long id, String email, String nickname) {
         this.id = id;
         this.email = email;
         this.nickname = nickname;
