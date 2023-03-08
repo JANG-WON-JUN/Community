@@ -47,15 +47,13 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     @Override
     public Page<Comment> getComments(CommentSearchCondition condition, Board board) {
         List<Comment> comments = queryFactory
-                .select(comment1)
-                .from(comment1)
+                .selectFrom(comment1)
                 .where(boardEq(board).and(parentNull()))
                 .orderBy(comment1.commentGroup.asc(), comment1.commentGroup.asc(), comment1.regDate.asc())
                 .fetch();
 
         long total = queryFactory
-                .select(comment1)
-                .from(comment1)
+                .selectFrom(comment1)
                 .where(boardEq(board))
                 .fetch()
                 .size();
