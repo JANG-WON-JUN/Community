@@ -2,6 +2,7 @@ package com.jwj.community.web.dto.comment.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.jwj.community.domain.entity.board.Comment;
+import com.jwj.community.web.dto.member.response.Writer;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,17 +25,23 @@ public class CommentView {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime regDate;
-    private String writerNickname;
+    private Writer writer;
 
     @Builder
     public CommentView(Comment comment) {
+        Writer boardWriter = Writer.builder()
+                .id(comment.getMember().getId())
+                .email(comment.getMember().getEmail())
+                .nickname(comment.getMember().getNickname())
+                .build();
+
         this.id = comment.getId();
         this.parentId = comment.getParent() == null ? null : comment.getParent().getId();
         this.comment = comment.getComment();
         this.commentGroup = comment.getCommentGroup();
         this.commentOrder = comment.getCommentOrder();
         this.regDate = comment.getRegDate();
-        this.writerNickname = comment.getMember().getNickname();
+        this.writer = boardWriter;
         this.replies = parseReplies(comment.getChildren());
     }
 
