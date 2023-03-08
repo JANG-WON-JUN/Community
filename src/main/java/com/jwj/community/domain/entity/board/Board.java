@@ -82,6 +82,7 @@ public class Board extends BaseEntity {
         if(comments.size() > 0) {
             comments.remove(comment);
         }
+        comment.setBoard(this);
         comments.add(comment);
     }
 }

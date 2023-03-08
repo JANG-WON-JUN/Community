@@ -3,10 +3,7 @@ package com.jwj.community.domain.entity.board;
 import com.jwj.community.domain.entity.BaseEntity;
 import com.jwj.community.domain.entity.member.Member;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,13 +26,16 @@ public class Comment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id", referencedColumnName = "id")
+    @Setter
     private Comment parent;
 
-    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OrderBy("id desc")
     private List<Comment> children = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(referencedColumnName = "id")
+    @Setter
     private Board board;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -64,5 +64,13 @@ public class Comment extends BaseEntity {
 
     public void edit(Comment comment) {
         this.comment = comment.getComment();
+    }
+
+    public void addChild(Comment childComment){
+        if(children.size() > 0) {
+            children.remove(childComment);
+        }
+        childComment.setParent(this);
+        children.add(childComment);
     }
 }
