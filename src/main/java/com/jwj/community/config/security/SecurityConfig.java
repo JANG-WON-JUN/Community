@@ -55,7 +55,6 @@ import static org.springframework.security.config.http.SessionCreationPolicy.STA
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
-    // todo JwtAuthenticationFilter를 구현하여 매 요청마다 JWT 토큰이 유요한지 체크 및 테스트를 작성해야 한다.
     private final UserDetailsService userDetailsService;
     private final MessageSource messageSource;
     private final PasswordEncoder passwordEncoder;
@@ -71,7 +70,6 @@ public class SecurityConfig {
         // 어떤 요청이던 access 클래스로 전달한다.
         http
             .authorizeHttpRequests(authorize -> authorize
-                    //.requestMatchers("/api/member/**", "/api/admin/**").access(access)
                     .requestMatchers(REQUIRED_AUTH_PATHS).access(access)
                     .anyRequest().permitAll()
             );
