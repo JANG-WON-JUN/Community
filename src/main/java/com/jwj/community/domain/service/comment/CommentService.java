@@ -34,7 +34,11 @@ public class CommentService {
             Integer maxCommentGroup = commentRepository.getMaxCommentGroup(savedBoard);
 
             comment.setCommentGroup(maxCommentGroup + 1);
+            commentRepository.save(comment);
         }else{
+            // child의 경우 parent를 조회하여 영속성 컨텍스트에 포함하고
+            // Cascade.Persist를 선언해주었으므로 객체의 연관관계만 매핑하면
+            // 영속성 컨텍스트가 commentRepository.save(child)를 해준다.
             Comment parent = findById(comment.getParent().getId());
             Integer maxCommentOrder = commentRepository.getMaxCommentOrder(savedBoard, parent.getCommentGroup());
 
@@ -44,11 +48,11 @@ public class CommentService {
 
             parent.addChild(comment);
         }
-        Comment savedComment = commentRepository.save(comment);
-        savedComment.setWriter(memberService.findByEmail(email));
+
+        comment.setWriter(memberService.findByEmail(email));
         savedBoard.addComment(comment);
 
-        return savedComment.getBoard().getId();
+        return comment.getBoard().getId();
     }
 
     public Page<Comment> getComments(CommentSearchCondition condition){
