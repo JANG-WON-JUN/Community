@@ -9,5 +9,4 @@ import java.util.List;
 public interface ResourcesQueryRepository {
 
     List<Resources> findByResourceType(ResourceType resourceType);
-
 }
