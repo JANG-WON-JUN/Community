@@ -8,5 +8,4 @@ import java.util.List;
 public interface MemberLevelLogQueryRepository {
 
     List<MemberLevelLog> findByMember(Member member);
-
 }

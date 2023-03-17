@@ -7,5 +7,4 @@ public interface MemberQueryRepository {
     Member findByEmail(String email);
 
     Member findByNickname(String nickname);
-
 }
