@@ -48,6 +48,7 @@ public class SshTunnelingInitializer {
 
             forwardedPort = session.setPortForwardingL(0, dbHost, dbPort);
         } catch (JSchException e) {
+            // todo DB 접속 실패에러 던저야 함
             e.printStackTrace();
         }
 
