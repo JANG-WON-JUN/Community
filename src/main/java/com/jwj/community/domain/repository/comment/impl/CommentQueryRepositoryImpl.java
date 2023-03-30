@@ -2,6 +2,7 @@ package com.jwj.community.domain.repository.comment.impl;
 
 import com.jwj.community.domain.entity.board.Board;
 import com.jwj.community.domain.entity.board.Comment;
+import com.jwj.community.domain.entity.board.QComment;
 import com.jwj.community.domain.repository.comment.CommentQueryRepository;
 import com.jwj.community.web.common.paging.request.CommentSearchCondition;
 import com.querydsl.core.BooleanBuilder;
@@ -46,8 +47,12 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
 
     @Override
     public Page<Comment> getComments(CommentSearchCondition condition, Board board) {
+        QComment subComment = new QComment("subComment");
+
         List<Comment> comments = queryFactory
                 .selectFrom(comment1)
+                .leftJoin(comment1.parent, subComment)
+                .fetchJoin()
                 .where(boardEq(board).and(parentNull()))
                 .orderBy(comment1.commentGroup.asc(), comment1.commentGroup.asc(), comment1.regDate.asc())
                 .fetch();
