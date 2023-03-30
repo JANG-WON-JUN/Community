@@ -17,7 +17,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-import org.springframework.test.annotation.Rollback;
 
 import java.util.List;
 
@@ -150,7 +149,6 @@ class CommentServiceTest {
 
     @Test
     @DisplayName("대댓글 달기 - 댓글 -> 대댓글 순서로 조회")
-    @Rollback(value = false)
     void nestCommentCreateTest1() {
         CommentCreate commentCreate = CommentCreate.builder()
                 .comment(TEST_COMMENT)
