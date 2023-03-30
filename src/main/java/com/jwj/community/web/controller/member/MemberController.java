@@ -8,7 +8,6 @@ import com.jwj.community.web.dto.member.request.MemberNickname;
 import com.jwj.community.web.validator.MemberCreateValidator;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import static java.lang.Boolean.FALSE;
 import static java.util.Locale.getDefault;
 
-@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class MemberController {
