@@ -4,8 +4,6 @@
 
 Community 프로젝트는 일상생활에서 쉽게 접할수 있는 게시판을 SpringBoot를 이용하여 구현한 프로젝트입니다. <br><br>
 
-[Community 프로젝트 둘러보기](http://ec2-3-36-246-194.ap-northeast-2.compute.amazonaws.com/boards?boardType=DEV&desc=%EA%B0%9C%EB%B0%9C+%EA%B2%8C%EC%8B%9C%ED%8C%90)
-
 ## 2. Community 프로젝트 시작 동기
 SpringBoot를 학습하면서 그동안 여러가지의 토이프로젝트를 만들었었지만 결국에는 완성을 하지 못하고 중도포기 한 적이 많았습니다.<br><br>
 그 이유는 1개의 웹사이트를 만들면서 아주 간단한 기능을 넘어선 이메일 인증, 비밀번호 변경 및 주기관리 등의 부가기능을 넣으려고 하면<br>
